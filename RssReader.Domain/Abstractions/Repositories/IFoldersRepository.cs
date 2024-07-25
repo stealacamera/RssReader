@@ -2,7 +2,7 @@
 
 namespace RssReader.Domain.Abstractions.Repositories;
 
-public interface IFoldersRepository : IBaseRepository<Folder>
+public interface IFoldersRepository : IBaseSimpleRepository<Folder>
 {
     Task<IEnumerable<Folder>> GetAllChildrenForFolderAsync(int parentFolderId, CancellationToken? cancellationToken = null);
     Task<IEnumerable<Folder>> GetAllForUserAsync(int userId, CancellationToken? cancellationToken = null);

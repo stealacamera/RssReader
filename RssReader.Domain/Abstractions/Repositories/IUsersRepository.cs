@@ -2,6 +2,6 @@
 
 namespace RssReader.Domain.Abstractions.Repositories;
 
-public interface IUsersRepository : IBaseRepository<User>
+public interface IUsersRepository : IBaseSimpleRepository<User>
 {    
 }

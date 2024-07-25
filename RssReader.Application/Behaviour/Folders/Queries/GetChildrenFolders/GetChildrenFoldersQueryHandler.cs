@@ -21,7 +21,7 @@ internal class GetChildrenFoldersQueryHandler : BaseCommandHandler, IRequestHand
                                           .GetByIdAsync(request.FolderId, cancellationToken);
 
         var childrenFolders = await _workUnit.FoldersRepository
-                                             .GetAllChildrenForFolderAsync(parentFolder.Id, cancellationToken);
+                                             .GetAllChildrenForFolderAsync(parentFolder!.Id, cancellationToken);
 
         return childrenFolders.Select(e => new Folder(e.Id, e.Name, e.OwnerId))
                               .ToList();
@@ -36,7 +36,7 @@ internal class GetChildrenFoldersQueryHandler : BaseCommandHandler, IRequestHand
                                           .GetByIdAsync(request.FolderId, cancellationToken);
 
         // Validate folder
-        if (!await _workUnit.FoldersRepository.DoesInstanceExistAsync(request.FolderId))
+        if (parentFolder == null)
             throw new EntityNotFoundException(nameof(Folder));
 
         // Validate requester as owner

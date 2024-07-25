@@ -2,7 +2,7 @@
 
 namespace RssReader.Domain.Entities;
 
-public class User : BaseEntity
+public class User : BaseSimpleEntity
 {
     public string Username { get; set; } = null!;
     public string HashedPassword { get; set; } = null!;

@@ -2,7 +2,7 @@
 using MediatR;
 using RssReader.Application.Common.DTOs;
 
-namespace RssReader.Application.Behaviour.Folders.Commands.CreateFolder;
+namespace RssReader.Application.Behaviour.Folders.Commands.Create;
 
 public record CreateFolderCommand(int RequesterId, string FolderName, int? ParentFolderId) : IRequest<Folder>;
 

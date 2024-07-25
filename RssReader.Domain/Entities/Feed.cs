@@ -2,7 +2,7 @@
 
 namespace RssReader.Domain.Entities;
 
-public class Feed : BaseEntity
+public class Feed : BaseSimpleEntity
 {
     public string Url { get; set; } = null!;
     public string Name { get; set; } = null!;

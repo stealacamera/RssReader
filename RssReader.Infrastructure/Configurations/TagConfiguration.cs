@@ -13,5 +13,14 @@ internal class TagConfiguration : IEntityTypeConfiguration<Tag>
         builder.Property(e => e.Name)
                .IsRequired()
                .HasMaxLength(30);
+
+        builder.HasIndex(e => new { e.Name, e.OwnerId })
+               .IsUnique();
+
+        builder.HasOne<User>()
+               .WithMany()
+               .HasForeignKey(e => e.OwnerId)
+               .OnDelete(DeleteBehavior.Restrict)
+               .IsRequired();
     }
 }

@@ -7,16 +7,16 @@ using RssReader.Domain.Abstractions;
 
 namespace RssReader.Application.Behaviour.Folders.Queries.GetAllForUser;
 
-internal class GetAllForUserQueryHandler : BaseCommandHandler, IRequestHandler<GetAllForUserQuery, IList<Folder>>
+internal class GetAllFoldersForUserQueryHandler : BaseCommandHandler, IRequestHandler<GetAllFoldersForUserQuery, IList<Folder>>
 {
-    public GetAllForUserQueryHandler(IWorkUnit workUnit) : base(workUnit)
+    public GetAllFoldersForUserQueryHandler(IWorkUnit workUnit) : base(workUnit)
     {
     }
 
-    public async Task<IList<Folder>> Handle(GetAllForUserQuery request, CancellationToken cancellationToken)
+    public async Task<IList<Folder>> Handle(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
     {
         // Validate request
-        await new GetAllForUserQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await new GetAllFoldersForUserQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate user
         if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.UserId, cancellationToken))

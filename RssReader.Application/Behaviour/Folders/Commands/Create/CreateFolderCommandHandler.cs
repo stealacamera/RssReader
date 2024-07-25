@@ -4,9 +4,8 @@ using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
 using RssReader.Application.Common.Exceptions;
 using RssReader.Domain.Abstractions;
-using System.Threading;
 
-namespace RssReader.Application.Behaviour.Folders.Commands.CreateFolder;
+namespace RssReader.Application.Behaviour.Folders.Commands.Create;
 
 internal class CreateFolderCommandHandler : BaseCommandHandler, IRequestHandler<CreateFolderCommand, Folder>
 {
@@ -21,11 +20,12 @@ internal class CreateFolderCommandHandler : BaseCommandHandler, IRequestHandler<
         var newFolder = await _workUnit.FoldersRepository
                                        .AddAsync(new Domain.Entities.Folder
                                        {
-                                           Name = request.FolderName,
+                                           Name = request.FolderName.Trim(),
                                            OwnerId = request.RequesterId,
                                            ParentId = request.ParentFolderId
                                        });
 
+        await _workUnit.SaveChangesAsync();
         return new Folder(newFolder.Id, newFolder.Name, newFolder.OwnerId);
     }
 
@@ -45,6 +45,6 @@ internal class CreateFolderCommandHandler : BaseCommandHandler, IRequestHandler<
 
         // Validate new folder
         if (await _workUnit.FoldersRepository.GetByNameAsync(request.RequesterId, request.FolderName, cancellationToken) != null)
-            ; // return specific error for name property
+            throw new ExistingFolderException(request.FolderName);
     }
 }

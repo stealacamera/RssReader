@@ -4,11 +4,11 @@ using RssReader.Application.Common.DTOs;
 
 namespace RssReader.Application.Behaviour.Folders.Queries.GetAllForUser;
 
-public record GetAllForUserQuery(int UserId) : IRequest<IList<Folder>>;
+public record GetAllFoldersForUserQuery(int UserId) : IRequest<IList<Folder>>;
 
-internal class GetAllForUserQueryValidator : AbstractValidator<GetAllForUserQuery>
+internal class GetAllFoldersForUserQueryValidator : AbstractValidator<GetAllFoldersForUserQuery>
 {
-    public GetAllForUserQueryValidator()
+    public GetAllFoldersForUserQueryValidator()
     {
         RuleFor(e => e.UserId)
             .NotEmpty()

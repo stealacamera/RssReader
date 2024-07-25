@@ -13,10 +13,14 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(e => e.Username)
                .IsRequired()
                .HasMaxLength(100);
+        builder.HasIndex(e => e.Username)
+                .IsUnique();
 
         builder.Property(e => e.Email)
                .IsRequired()
                .HasMaxLength(100);
+
+        builder.HasIndex(e => e.Email);
 
         builder.Property(e => e.HashedPassword)
                .IsRequired();

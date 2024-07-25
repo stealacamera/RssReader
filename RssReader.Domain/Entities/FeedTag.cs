@@ -1,6 +1,8 @@
-﻿namespace RssReader.Domain.Entities;
+﻿using RssReader.Domain.Common;
 
-public class FeedTag
+namespace RssReader.Domain.Entities;
+
+public class FeedTag : BaseEntity
 {
     public int TagId { get; set; }
     public int FeedId { get; set; }
