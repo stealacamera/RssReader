@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using System.Text.RegularExpressions;
 
 namespace RssReader.Application.Behaviour.Users.Commands.Create;
 
@@ -20,18 +20,13 @@ internal class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
             .EmailAddress()
             .MaximumLength(100);
 
-        RuleFor(e => e.Password)
+        RuleFor(e => e.Password.Trim())
             .NotEmpty()
-            .MinimumLength(8)
-            .MaximumLength(30)
-            .Must(password =>
-            {
-                Regex allowedCharacters = new(@"^(?=.*[a-z])(?=.*\d)(?=.*[^\da-zA-Z]).*$");
-                return allowedCharacters.IsMatch(password);
-            })
-            .WithMessage("Password requires a letter a-z, at least one number and one symbol");
+            .Must(Utils.IsPasswordValid);
 
-        RuleFor(e => e.Username)
-            .MaximumLength(100);
+        When(
+            e => e.Username != null, 
+            () => RuleFor(e => e.Username!.Trim())
+                    .MaximumLength(Utils.UsernameMaxLength));
     }
 }

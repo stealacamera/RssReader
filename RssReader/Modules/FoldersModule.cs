@@ -1,9 +1,9 @@
 ﻿using Carter;
 using MediatR;
+using RssReader.API.Common.DTOs.Folder;
 using RssReader.Application.Behaviour.Folders.Commands.Create;
 using RssReader.Application.Behaviour.Folders.Queries.GetAllForUser;
 using RssReader.Application.Behaviour.Folders.Queries.GetChildrenFolders;
-using RssReader.Application.Common.DTOs;
 
 namespace RssReader.API.Modules;
 
@@ -21,13 +21,13 @@ public class FoldersModule : CarterModule
         app.MapGet("/user/{id}", async (int id, ISender sender) =>
         {
             var folders = await sender.Send(new GetAllFoldersForUserQuery(userId));
-            return folders;
+            return TypedResults.Ok(folders);
         });
 
         app.MapGet("/{id}/children", async (int id, ISender sender) =>
         {
             var subFolders = await sender.Send(new GetChildrenFoldersQuery(userId, id));
-            return subFolders;
+            return TypedResults.Ok(subFolders);
         });
 
         app.MapPost("/", async (CreateFolderRequest request, ISender sender) =>
@@ -35,7 +35,7 @@ public class FoldersModule : CarterModule
             var command = new CreateFolderCommand(userId, request.Name, request.ParentFolderId);
             var newFolder = await sender.Send(command);
 
-            return newFolder;
+            return TypedResults.Created(string.Empty, newFolder);
         });
     }
 }

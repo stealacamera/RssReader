@@ -4,7 +4,7 @@ namespace RssReader.Domain.Abstractions.Repositories;
 
 public interface IBaseRepository<T> where T : BaseEntity
 {
-    Task<T> AddAsync(T entity, CancellationToken? cancellationToken = null);
+    Task AddAsync(T entity, CancellationToken? cancellationToken = null);
     void Delete(T entity, CancellationToken? cancellationToken = null);
 
 }

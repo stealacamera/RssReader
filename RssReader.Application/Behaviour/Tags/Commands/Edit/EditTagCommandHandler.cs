@@ -18,7 +18,7 @@ internal class EditTagCommandHandler : BaseCommandHandler, IRequestHandler<EditT
         await ValidateRequestAsync(request, cancellationToken);
 
         var tag = await _workUnit.TagsRepository
-                                 .GetByIdAsync(request.TagId);
+                                 .GetByIdAsync(request.TagId, cancellationToken);
 
         tag!.Name = request.NewTagName.Trim();
         await _workUnit.SaveChangesAsync();
@@ -38,7 +38,7 @@ internal class EditTagCommandHandler : BaseCommandHandler, IRequestHandler<EditT
         
         // Validate tag ownership & name uniqeness
         var tag = await _workUnit.TagsRepository
-                                 .GetByIdAsync(request.TagId);
+                                 .GetByIdAsync(request.TagId, cancellationToken);
 
         if (tag == null)
             throw new EntityNotFoundException(nameof(Tag));

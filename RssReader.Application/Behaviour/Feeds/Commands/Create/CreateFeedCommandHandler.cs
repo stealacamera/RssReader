@@ -19,16 +19,17 @@ internal class CreateFeedCommandHandler : BaseCommandHandler, IRequestHandler<Cr
         await ValidateRequestAsync(request, cancellationToken);
 
         // Create feed
-        var feed = await _workUnit.FeedsRepository
-                                  .AddAsync(new Domain.Entities.Feed
-                                  {
-                                      CreatedAt = DateTime.Now,
-                                      FolderId = request.FolderId,
-                                      Name = request.Name != null ? request.Name.Trim() : request.Url.Remove(80),
-                                      Url = request.Url.Trim()
-                                  });
-
+        var feed = new Domain.Entities.Feed
+        {
+            CreatedAt = DateTime.Now,
+            FolderId = request.FolderId,
+            Name = request.Name != null ? request.Name.Trim() : request.Url.Remove(80),
+            Url = request.Url.Trim()
+        };
+        
+        await _workUnit.FeedsRepository.AddAsync(feed, cancellationToken);
         await _workUnit.SaveChangesAsync();
+
         return new Feed(feed.Id, feed.Url, feed.Name);
     }
 

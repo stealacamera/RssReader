@@ -17,15 +17,16 @@ internal class CreateFolderCommandHandler : BaseCommandHandler, IRequestHandler<
     {
         await ValidateRequestAsync(request, cancellationToken);
 
-        var newFolder = await _workUnit.FoldersRepository
-                                       .AddAsync(new Domain.Entities.Folder
-                                       {
-                                           Name = request.FolderName.Trim(),
-                                           OwnerId = request.RequesterId,
-                                           ParentId = request.ParentFolderId
-                                       });
-
+        var newFolder = new Domain.Entities.Folder
+        {
+            Name = request.FolderName.Trim(),
+            OwnerId = request.RequesterId,
+            ParentId = request.ParentFolderId
+        };
+        
+        await _workUnit.FoldersRepository.AddAsync(newFolder, cancellationToken);
         await _workUnit.SaveChangesAsync();
+
         return new Folder(newFolder.Id, newFolder.Name, newFolder.OwnerId);
     }
 
@@ -40,7 +41,7 @@ internal class CreateFolderCommandHandler : BaseCommandHandler, IRequestHandler<
 
         // Validate parent folder (if given)
         if (request.ParentFolderId.HasValue && 
-            !await _workUnit.FoldersRepository.DoesInstanceExistAsync(request.ParentFolderId.Value))
+            !await _workUnit.FoldersRepository.DoesInstanceExistAsync(request.ParentFolderId.Value, cancellationToken))
             throw new EntityNotFoundException(nameof(Folder));
 
         // Validate new folder

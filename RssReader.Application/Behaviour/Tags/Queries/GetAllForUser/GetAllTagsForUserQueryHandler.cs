@@ -20,7 +20,7 @@ internal class GetAllTagsForUserQueryHandler : BaseCommandHandler, IRequestHandl
 
         // Validate user
         if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId))
+                            .DoesInstanceExistAsync(request.RequesterId, cancellationToken))
             throw new UnauthorizedException();
 
         // Get user tags

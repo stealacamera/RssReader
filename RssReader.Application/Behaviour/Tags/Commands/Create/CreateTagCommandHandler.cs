@@ -19,14 +19,15 @@ internal class CreateTagCommandHandler : BaseCommandHandler, IRequestHandler<Cre
         await ValidateRequestAsync(request, cancellationToken);
 
         // Create tag
-        var tag = await _workUnit.TagsRepository
-                                 .AddAsync(new Domain.Entities.Tag
-                                 {
-                                     Name = request.TagName.Trim(),
-                                     OwnerId = request.RequesterId
-                                 }, cancellationToken);
-
+        var tag = new Domain.Entities.Tag
+        {
+            Name = request.TagName.Trim(),
+            OwnerId = request.RequesterId
+        };
+        
+        await _workUnit.TagsRepository.AddAsync(tag, cancellationToken);
         await _workUnit.SaveChangesAsync();
+
         return new Tag(tag.Id, tag.Name);
     }
 
