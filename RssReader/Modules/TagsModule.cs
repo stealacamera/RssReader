@@ -1,9 +1,9 @@
 ﻿using Carter;
 using MediatR;
-using RssReader.API.Common.DTOs;
-using RssReader.Application.Behaviour.Tags.Commands.Create;
-using RssReader.Application.Behaviour.Tags.Commands.Edit;
-using RssReader.Application.Behaviour.Tags.Queries.GetAllForUser;
+using RssReader.API.Common.DTOs.Requests;
+using RssReader.Application.Behaviour.Operations.Tags.Commands.Create;
+using RssReader.Application.Behaviour.Operations.Tags.Commands.Edit;
+using RssReader.Application.Behaviour.Operations.Tags.Queries.GetAllForUser;
 
 namespace RssReader.API.Modules;
 
@@ -11,7 +11,7 @@ public class TagsModule : CarterModule
 {
     public TagsModule() : base("/tags")
     {
-        
+        RequireAuthorization();
     }
 
     public override void AddRoutes(IEndpointRouteBuilder app)

@@ -1,9 +1,9 @@
 ﻿using Carter;
 using MediatR;
-using RssReader.API.Common.DTOs.Folder;
-using RssReader.Application.Behaviour.Folders.Commands.Create;
-using RssReader.Application.Behaviour.Folders.Queries.GetAllForUser;
-using RssReader.Application.Behaviour.Folders.Queries.GetChildrenFolders;
+using RssReader.API.Common.DTOs.Requests;
+using RssReader.Application.Behaviour.Operations.Folders.Commands.Create;
+using RssReader.Application.Behaviour.Operations.Folders.Queries.GetAllForUser;
+using RssReader.Application.Behaviour.Operations.Folders.Queries.GetChildrenFolders;
 
 namespace RssReader.API.Modules;
 
@@ -11,7 +11,7 @@ public class FoldersModule : CarterModule
 {
     public FoldersModule() : base("/folders")
     {
-        //this.RequireAuthorization();
+        RequireAuthorization();
     }
 
     public override void AddRoutes(IEndpointRouteBuilder app)

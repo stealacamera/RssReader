@@ -96,10 +96,30 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("Name", "OwnerId")
-                        .IsUnique();
-
                     b.ToTable("Folder");
+                });
+
+            modelBuilder.Entity("RssReader.Domain.Entities.OTP", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("ExpiryDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(6)
+                        .HasColumnType("character varying(6)");
+
+                    b.Property<int>("RetryAttempts")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0);
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("OTP");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.Tag", b =>
@@ -121,9 +141,6 @@ namespace RssReader.Infrastructure.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OwnerId");
-
-                    b.HasIndex("Name", "OwnerId")
-                        .IsUnique();
 
                     b.ToTable("Tag");
                 });
@@ -150,6 +167,12 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.Property<bool>("IsEmailConfirmed")
                         .HasColumnType("boolean");
+
+                    b.Property<string>("RefreshToken")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("RefreshTokenExpiry")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Username")
                         .HasMaxLength(100)
@@ -197,6 +220,15 @@ namespace RssReader.Infrastructure.Migrations
                     b.HasOne("RssReader.Domain.Entities.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("RssReader.Domain.Entities.OTP", b =>
+                {
+                    b.HasOne("RssReader.Domain.Entities.User", null)
+                        .WithOne()
+                        .HasForeignKey("RssReader.Domain.Entities.OTP", "UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

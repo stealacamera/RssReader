@@ -3,16 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35027.167
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RssReader.API", "RssReader\RssReader.API.csproj", "{F695D4FF-664D-483F-AEF4-298A8F238D57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RssReader.API", "RssReader\RssReader.API.csproj", "{F695D4FF-664D-483F-AEF4-298A8F238D57}"
 	ProjectSection(ProjectDependencies) = postProject
 		{BCB3543E-F532-4B60-9FC9-8337B723C347} = {BCB3543E-F532-4B60-9FC9-8337B723C347}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RssReader.Domain", "RssReader.Domain\RssReader.Domain.csproj", "{8AD2349A-5758-468D-A831-A95A10B43A58}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RssReader.Domain", "RssReader.Domain\RssReader.Domain.csproj", "{8AD2349A-5758-468D-A831-A95A10B43A58}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RssReader.Infrastructure", "RssReader.Infrastructure\RssReader.Infrastructure.csproj", "{BCB3543E-F532-4B60-9FC9-8337B723C347}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RssReader.Infrastructure", "RssReader.Infrastructure\RssReader.Infrastructure.csproj", "{BCB3543E-F532-4B60-9FC9-8337B723C347}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RssReader.Application", "RssReader.Application\RssReader.Application.csproj", "{CAC85F59-6CC5-4626-8850-DD6C4165F577}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RssReader.Application", "RssReader.Application\RssReader.Application.csproj", "{CAC85F59-6CC5-4626-8850-DD6C4165F577}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RssReader.UIUtils", "RssReader.UI\RssReader.UIUtils.csproj", "{FA9CBFB4-6F28-49A9-8E05-D3936EF815CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{CAC85F59-6CC5-4626-8850-DD6C4165F577}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC85F59-6CC5-4626-8850-DD6C4165F577}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC85F59-6CC5-4626-8850-DD6C4165F577}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA9CBFB4-6F28-49A9-8E05-D3936EF815CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA9CBFB4-6F28-49A9-8E05-D3936EF815CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA9CBFB4-6F28-49A9-8E05-D3936EF815CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA9CBFB4-6F28-49A9-8E05-D3936EF815CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

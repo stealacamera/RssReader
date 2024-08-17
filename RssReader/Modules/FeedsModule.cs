@@ -1,11 +1,10 @@
 ﻿using Carter;
 using MediatR;
-using RssReader.API.Common.DTOs;
-using RssReader.Application.Behaviour.Feeds.Commands.Create;
-using RssReader.Application.Behaviour.Feeds.Queries.GetAllForFolder;
-using RssReader.Application.Behaviour.FeedTags.Commands.AddTagToFeed;
-using RssReader.Application.Behaviour.FeedTags.Commands.DeleteFeedTag;
-using RssReader.Application.Common.DTOs;
+using RssReader.API.Common.DTOs.Requests;
+using RssReader.Application.Behaviour.Operations.Feeds.Commands.Create;
+using RssReader.Application.Behaviour.Operations.Feeds.Queries.GetAllForFolder;
+using RssReader.Application.Behaviour.Operations.FeedTags.Commands.AddTagToFeed;
+using RssReader.Application.Behaviour.Operations.FeedTags.Commands.DeleteFeedTag;
 
 namespace RssReader.API.Modules;
 
@@ -13,7 +12,7 @@ public class FeedsModule : CarterModule
 {
     public FeedsModule() : base("/feeds")
     {
-        
+        RequireAuthorization();
     }
 
     public override void AddRoutes(IEndpointRouteBuilder app)
