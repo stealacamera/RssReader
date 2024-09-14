@@ -20,7 +20,8 @@ internal class AddTagToFeedCommandHandler : BaseHandler, IRequestHandler<AddTagT
                        .AddAsync(new Domain.Entities.FeedTag
                        {
                            FeedId = request.FeedId,
-                           TagId = request.TagId
+                           TagId = request.TagId,
+                           CreatedAt = DateTime.UtcNow
                        }, cancellationToken);
 
         await _workUnit.SaveChangesAsync();

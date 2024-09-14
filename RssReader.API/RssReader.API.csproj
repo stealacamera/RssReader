@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -31,5 +31,10 @@
     <ProjectReference Include="..\RssReader.Application\RssReader.Application.csproj" />
     <ProjectReference Include="..\RssReader.Infrastructure\RssReader.Infrastructure.csproj" />
   </ItemGroup>
+
+	<!--For test suite purposes-->
+	<ItemGroup>
+		<InternalsVisibleTo Include="RssReader.IntegrationTests"/>
+	</ItemGroup>
 
 </Project>

@@ -14,6 +14,18 @@ internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<G
 
     public async Task<IList<Folder>> Handle(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
     {
+        await ValidateRequest(request, cancellationToken);
+
+        // Retrieve folders
+        var userFolders = await _workUnit.FoldersRepository
+                                         .GetAllForUserAsync(request.UserId, cancellationToken);
+
+        return userFolders.Select(e => new Folder(e.Id, e.Name, request.UserId))
+                          .ToList();
+    }
+
+    private async Task ValidateRequest(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
+    {
         // Validate request
         var validationDetails = await new GetAllFoldersForUserQueryValidator().ValidateAsync(request, cancellationToken);
 
@@ -24,11 +36,9 @@ internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<G
         if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.UserId, cancellationToken))
             throw new EntityNotFoundException(nameof(User));
 
-        // Retrieve folders
-        var userFolders = await _workUnit.FoldersRepository
-                                         .GetAllForUserAsync(request.UserId, cancellationToken);
-
-        return userFolders.Select(e => new Folder(e.Id, e.Name, request.UserId))
-                          .ToList();
+        // Validate requester
+        if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.RequesterId, cancellationToken) ||
+            request.UserId != request.RequesterId)
+            throw new UnauthorizedException();
     }
 }

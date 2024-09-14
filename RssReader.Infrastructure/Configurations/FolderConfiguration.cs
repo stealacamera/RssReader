@@ -14,6 +14,9 @@ internal class FolderConfiguration : IEntityTypeConfiguration<Folder>
                .IsRequired()
                .HasMaxLength(40);
 
+        builder.Property(e => e.CreatedAt)
+               .IsRequired();
+
         builder.HasOne<Folder>()
                .WithMany()
                .HasForeignKey(e => e.ParentId)

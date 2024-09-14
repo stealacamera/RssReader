@@ -10,6 +10,9 @@ internal class FeedTagConfiguration : IEntityTypeConfiguration<FeedTag>
     {
         builder.HasKey(e => new { e.TagId, e.FeedId });
 
+        builder.Property(e => e.CreatedAt)
+               .IsRequired();
+
         builder.HasOne<Tag>()
                .WithMany()
                .HasForeignKey(e => e.TagId)

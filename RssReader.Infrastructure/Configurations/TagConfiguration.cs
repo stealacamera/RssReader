@@ -14,6 +14,9 @@ internal class TagConfiguration : IEntityTypeConfiguration<Tag>
                .IsRequired()
                .HasMaxLength(30);
 
+        builder.Property(e => e.CreatedAt)
+               .IsRequired();
+
         builder.HasOne<User>()
                .WithMany()
                .HasForeignKey(e => e.OwnerId)

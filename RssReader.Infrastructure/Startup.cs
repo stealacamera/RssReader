@@ -40,8 +40,8 @@ public static class Startup
         configuration.GetSection(EmailOptions.SectionName).Bind(emailOptions);
 
         services.AddFluentEmail(emailOptions.Email)
-                .AddRazorRenderer()
-                .AddSmtpSender(emailOptions.Host, emailOptions.Port, emailOptions.Name, emailOptions.Password);
+                //.AddRazorRenderer(typeof(Startup))
+                .AddSmtpSender(emailOptions.Host, emailOptions.Port, emailOptions.Email, emailOptions.Password);
     }
 
     private static void RegisterOptions(IServiceCollection services)

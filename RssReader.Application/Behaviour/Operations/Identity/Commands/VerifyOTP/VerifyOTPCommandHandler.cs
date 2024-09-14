@@ -47,9 +47,12 @@ internal class VerifyOTPCommandHandler : BaseHandler, IRequestHandler<VerifyOTPC
             throw new ValidationException(validationDetails.ToDictionary());
 
         // Validate user
-        if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId))
+        var requester = await _workUnit.UsersRepository.GetByIdAsync(request.RequesterId);
+
+        if (requester == null)
             throw new EntityNotFoundException(nameof(User));
+        else if (requester.IsEmailConfirmed)
+            throw new UnauthorizedException();
 
         // Validate OTP
         var otp = await _workUnit.OTPsRepository

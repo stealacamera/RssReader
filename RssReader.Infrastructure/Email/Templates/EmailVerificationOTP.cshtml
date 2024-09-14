@@ -1,0 +1,41 @@
+﻿@model string
+
+@section Styles {
+    <style>
+        .otp {
+            font-size: 30px;
+            font-weight: bold;
+            letter-spacing: 1em;
+        }
+
+        .hint {
+            color: slategrey;
+            font-size: 12px;
+        }
+    </style>
+}
+
+<h3>Let's sign you up</h3>
+
+<p>Use this code to complete your registration.</p>
+<p>Careful, this code expires in 5 minutes.</p>
+
+<div>
+    <p id="otp" class="otp">@Model</p>
+    <p class="hint">Click to copy the code!</p>
+</div>
+
+<br/>
+<p class="hint">If you didn't request this email, you can safely ignore it</p>
+
+@section Scripts {
+    <script>
+        var verificationCode = document.getElementById('otp');
+
+        verificationCode.addEventListener(
+            'click',
+            () => navigator.clipboard.writeText(verificationCode.textContent)
+        );
+
+    </script>
+}

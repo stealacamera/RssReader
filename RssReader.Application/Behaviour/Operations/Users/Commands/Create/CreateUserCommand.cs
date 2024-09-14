@@ -15,7 +15,7 @@ public record CreateUserCommand : IRequest<User>
     {
         Email = email.Trim();
         Password = password.Trim();
-        Username = username?.Trim();
+        Username = string.IsNullOrEmpty(username?.Trim()) ? null : username.Trim();
     }
 }
 

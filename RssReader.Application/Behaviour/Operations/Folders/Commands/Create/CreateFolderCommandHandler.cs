@@ -20,7 +20,8 @@ internal class CreateFolderCommandHandler : BaseHandler, IRequestHandler<CreateF
         {
             Name = request.FolderName.Trim(),
             OwnerId = request.RequesterId,
-            ParentId = request.ParentFolderId
+            ParentId = request.ParentFolderId,
+            CreatedAt = DateTime.UtcNow,
         };
 
         await _workUnit.FoldersRepository.AddAsync(newFolder, cancellationToken);
@@ -41,9 +42,15 @@ internal class CreateFolderCommandHandler : BaseHandler, IRequestHandler<CreateF
         if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.RequesterId, cancellationToken))
             throw new EntityNotFoundException(nameof(User));
 
-        // Validate parent folder (if given)
-        if (request.ParentFolderId.HasValue &&
-            !await _workUnit.FoldersRepository.DoesInstanceExistAsync(request.ParentFolderId.Value, cancellationToken))
-            throw new EntityNotFoundException(nameof(Folder));
+        // Validate parent folder (if given) & ownership
+        if (request.ParentFolderId.HasValue)
+        {
+            var parentFolder = await _workUnit.FoldersRepository.GetByIdAsync(request.ParentFolderId.Value, cancellationToken);
+
+            if (parentFolder == null)
+                throw new EntityNotFoundException(nameof(Folder));
+            else if (parentFolder.OwnerId != request.RequesterId)
+                throw new UnauthorizedException();
+        }
     }
 }

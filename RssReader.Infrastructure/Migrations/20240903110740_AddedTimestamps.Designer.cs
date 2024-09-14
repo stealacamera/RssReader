@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using RssReader.Infrastructure;
@@ -11,9 +12,11 @@ using RssReader.Infrastructure;
 namespace RssReader.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240903110740_AddedTimestamps")]
+    partial class AddedTimestamps
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,7 +56,7 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasIndex("FolderId");
 
-                    b.ToTable("Feed", (string)null);
+                    b.ToTable("Feed");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.FeedTag", b =>
@@ -74,7 +77,7 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasIndex("FeedId");
 
-                    b.ToTable("FeedTag", (string)null);
+                    b.ToTable("FeedTag");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.Folder", b =>
@@ -111,7 +114,7 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Folder", (string)null);
+                    b.ToTable("Folder");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.OTP", b =>
@@ -140,7 +143,7 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasKey("UserId");
 
-                    b.ToTable("OTP", (string)null);
+                    b.ToTable("OTP");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.Tag", b =>
@@ -169,7 +172,7 @@ namespace RssReader.Infrastructure.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Tag", (string)null);
+                    b.ToTable("Tag");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.User", b =>
@@ -213,7 +216,7 @@ namespace RssReader.Infrastructure.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
-                    b.ToTable("User", (string)null);
+                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("RssReader.Domain.Entities.Feed", b =>

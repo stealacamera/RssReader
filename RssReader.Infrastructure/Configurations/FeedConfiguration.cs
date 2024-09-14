@@ -18,6 +18,9 @@ internal class FeedConfiguration : IEntityTypeConfiguration<Feed>
                .IsRequired()
                .HasMaxLength(80);
 
+        builder.Property(e => e.CreatedAt)
+               .IsRequired();
+
         builder.HasOne<Folder>()
             .WithMany()
             .HasForeignKey(e => e.FolderId)

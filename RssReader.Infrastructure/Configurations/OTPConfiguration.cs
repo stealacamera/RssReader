@@ -21,6 +21,9 @@ internal class OTPConfiguration : IEntityTypeConfiguration<OTP>
         builder.Property(e => e.ExpiryDate)
                .IsRequired();
 
+        builder.Property(e => e.CreatedAt)
+               .IsRequired();
+
         builder.HasOne<User>()
             .WithOne()
             .HasForeignKey<OTP>(e => e.UserId)
