@@ -30,6 +30,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -39,7 +45,7 @@
         "tags": [
           "FeedsModule"
         ],
-        "description": "Adds tag to a feed",
+        "summary": "Adds tag to a feed",
         "parameters": [
           {
             "name": "id",
@@ -63,6 +69,12 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -72,7 +84,7 @@
         "tags": [
           "FeedsModule"
         ],
-        "description": "Removes tag from a feed",
+        "summary": "Removes tag from a feed",
         "parameters": [
           {
             "name": "feedId",
@@ -96,6 +108,12 @@
         "responses": {
           "204": {
             "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -125,6 +143,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -159,6 +183,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -193,6 +223,12 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -219,6 +255,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Existing email or validation errors",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -251,6 +297,34 @@
                 }
               }
             }
+          },
+          "400": {
+            "description": "Incorrect credentials or validation errors",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Email is unconfirmed"
+          }
+        }
+      }
+    },
+    "/identity/logout": {
+      "post": {
+        "tags": [
+          "IdentityModule"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -260,7 +334,7 @@
         "tags": [
           "IdentityModule"
         ],
-        "description": "Verifies account email",
+        "summary": "Verifies account email",
         "requestBody": {
           "content": {
             "application/json": {
@@ -276,7 +350,20 @@
             "description": "Accepted"
           },
           "400": {
-            "description": "Bad Request"
+            "description": "Incorrect or invalid OTP, or validation errors",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "User could not be found"
+          },
+          "401": {
+            "description": "Email is already confirmed"
           }
         }
       },
@@ -284,7 +371,7 @@
         "tags": [
           "IdentityModule"
         ],
-        "description": "Resends account verification token email",
+        "summary": "Resends account verification token email",
         "parameters": [
           {
             "name": "userId",
@@ -299,6 +386,9 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
@@ -308,7 +398,7 @@
         "tags": [
           "IdentityModule"
         ],
-        "description": "Refreshes user tokens",
+        "summary": "Refreshes user tokens",
         "requestBody": {
           "content": {
             "application/json": {
@@ -326,6 +416,16 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Tokens"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid tokens, or validation errors",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HttpValidationProblemDetails"
                 }
               }
             }
@@ -358,6 +458,9 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
@@ -398,27 +501,22 @@
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }
     },
-    "/users/{id}": {
+    "/users": {
       "patch": {
         "tags": [
           "UsersModule"
         ],
         "description": "Updates account information",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -432,27 +530,19 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
     },
-    "/users/{id}/password": {
+    "/users/password": {
       "put": {
         "tags": [
           "UsersModule"
         ],
         "description": "Updates account password",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -466,25 +556,24 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/users/{id}/tags": {
+    "/users/tags": {
       "get": {
         "tags": [
           "UsersModule"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -503,21 +592,10 @@
         }
       }
     },
-    "/users/{id}/folders": {
+    "/users/folders": {
       "get": {
         "tags": [
           "UsersModule"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
         ],
         "responses": {
           "200": {
@@ -646,6 +724,45 @@
         },
         "additionalProperties": false
       },
+      "HttpValidationProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+
+        }
+      },
       "LoggedInUser": {
         "type": "object",
         "properties": {
@@ -672,13 +789,38 @@
         },
         "additionalProperties": false
       },
+      "ProblemDetails": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": {
+
+        }
+      },
       "RefreshTokensRequest": {
         "type": "object",
         "properties": {
-          "userId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "jwtToken": {
             "type": "string",
             "nullable": true
@@ -768,7 +910,7 @@
     "securitySchemes": {
       "Bearer": {
         "type": "http",
-        "description": "JWT authentication. Example: Bearer [token]",
+        "description": "JWT authentication (no need to add 'Bearer' in the beginning)",
         "scheme": "Bearer",
         "bearerFormat": "JWT"
       }
