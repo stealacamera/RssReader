@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
@@ -50,14 +51,13 @@ internal class CreateUserCommandHandler : BaseHandler, IRequestHandler<CreateUse
     private async Task ValidateRequestAsync(CreateUserCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new CreateUserCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await new CreateUserCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate email uniqueness
-        if (await _workUnit.UsersRepository
-                           .GetByEmailAsync(request.Email, cancellationToken) != null)
+        var existingUserEmail = await _workUnit.UsersRepository
+                                               .GetByEmailAsync(request.Email, cancellationToken);
+        
+        if (existingUserEmail != null)
             throw new ExistingEmailException();
     }
 }

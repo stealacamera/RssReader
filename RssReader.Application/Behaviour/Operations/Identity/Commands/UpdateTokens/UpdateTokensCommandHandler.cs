@@ -1,8 +1,10 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
 using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Identity.Commands.UpdateTokens;
 
@@ -34,17 +36,10 @@ internal class UpdateTokensCommandHandler : BaseHandler, IRequestHandler<UpdateT
     private async Task<Domain.Entities.User> ValidateRequestAsync(UpdateTokensCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new UpdateTokensCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Extract user id from JWT token
-        var userId = _jwtProvider.ExtractIdFromToken(request.JwtToken);
+        await new UpdateTokensCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate user & refresh tokens
-        if (userId != request.RequesterId)
-            throw new UnauthorizedException();
+        var userId = _jwtProvider.ExtractIdFromToken(request.JwtToken);
 
         var user = await _workUnit.UsersRepository
                                   .GetByIdAsync(userId, cancellationToken);

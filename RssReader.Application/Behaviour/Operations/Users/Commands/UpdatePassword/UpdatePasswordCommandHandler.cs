@@ -1,8 +1,10 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Microsoft.AspNetCore.Identity;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.UpdatePassword;
 
@@ -26,10 +28,7 @@ internal class UpdatePasswordCommandHandler : BaseHandler, IRequestHandler<Updat
     private async Task<Domain.Entities.User> ValidateRequestAsync(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new UpdatePasswordCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await new UpdatePasswordCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate user
         var user = await _workUnit.UsersRepository

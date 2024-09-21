@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
 
 namespace RssReader.Application.Behaviour.Operations.Tags.Queries.GetAllForUser;
 
@@ -15,15 +15,8 @@ internal class GetAllTagsForUserQueryHandler : BaseHandler, IRequestHandler<GetA
     public async Task<IList<Tag>> Handle(GetAllTagsForUserQuery request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new GetAllTagsForUserQueryValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Validate user
-        if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId, cancellationToken))
-            throw new UnauthorizedException();
+        await new GetAllTagsForUserQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
         // Get user tags
         var tags = await _workUnit.TagsRepository

@@ -5,4 +5,4 @@ public record SignupRequest(string Email, string Password, string? Username = nu
 
 public record EmailVerificationRequest(int UserId, string OTP);
 
-public record RefreshTokensRequest(int UserId, string JwtToken, string RefreshToken);
+public record RefreshTokensRequest(string JwtToken, string RefreshToken);

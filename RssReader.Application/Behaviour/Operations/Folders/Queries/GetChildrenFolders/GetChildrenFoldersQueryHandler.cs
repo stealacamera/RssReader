@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Folders.Queries.GetChildrenFolders;
 
@@ -16,11 +17,8 @@ internal class GetChildrenFoldersQueryHandler : BaseHandler, IRequestHandler<Get
     {
         await ValidateRequestAsync(request, cancellationToken);
 
-        var parentFolder = await _workUnit.FoldersRepository
-                                          .GetByIdAsync(request.FolderId, cancellationToken);
-
         var childrenFolders = await _workUnit.FoldersRepository
-                                             .GetAllChildrenForFolderAsync(parentFolder!.Id, cancellationToken);
+                                             .GetAllChildrenForFolderAsync(request.FolderId, cancellationToken);
 
         return childrenFolders.Select(e => new Folder(e.Id, e.Name, e.OwnerId))
                               .ToList();
@@ -28,22 +26,15 @@ internal class GetChildrenFoldersQueryHandler : BaseHandler, IRequestHandler<Get
 
     private async Task ValidateRequestAsync(GetChildrenFoldersQuery request, CancellationToken cancellationToken)
     {
-        // validate request
-        var validationDetails = await new GetChildrenFoldersQueryValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await new GetChildrenFoldersQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
         var parentFolder = await _workUnit.FoldersRepository
                                           .GetByIdAsync(request.FolderId, cancellationToken);
 
-        // Validate folder
+        // Validate folder & ownership
         if (parentFolder == null)
             throw new EntityNotFoundException(nameof(Folder));
-
-        // Validate requester as owner
-        if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.RequesterId))
-            throw new EntityNotFoundException(nameof(User));
         else if (parentFolder.OwnerId != request.RequesterId)
             throw new UnauthorizedException();
     }

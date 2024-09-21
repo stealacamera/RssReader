@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Tags.Commands.Create;
 
@@ -16,7 +17,7 @@ public record CreateTagCommand : IRequest<Tag>
     }
 }
 
-internal class CreateTagCommandValidator : AbstractValidator<CreateTagCommand>
+internal class CreateTagCommandValidator : Validator<CreateTagCommand>
 {
     public CreateTagCommandValidator()
     {

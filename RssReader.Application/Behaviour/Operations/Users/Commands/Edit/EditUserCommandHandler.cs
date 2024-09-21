@@ -1,7 +1,8 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.Edit;
 
@@ -13,11 +14,7 @@ internal class EditUserCommandHandler : BaseHandler, IRequestHandler<EditUserCom
 
     public async Task Handle(EditUserCommand request, CancellationToken cancellationToken)
     {
-        // Validate request properties
-        var validationDetails = await new EditUserCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await new EditUserCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate user
         var user = await _workUnit.UsersRepository

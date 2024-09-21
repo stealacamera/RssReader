@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using RssReader.Application.Common;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.Edit;
 
@@ -15,7 +15,7 @@ public record EditUserCommand : IRequest
     }
 }
 
-internal class EditUserCommandValidator : AbstractValidator<EditUserCommand>
+internal class EditUserCommandValidator : Validator<EditUserCommand>
 {
     public EditUserCommandValidator()
     {

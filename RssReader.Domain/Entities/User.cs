@@ -11,5 +11,5 @@ public class User : BaseSimpleEntity
     public bool IsEmailConfirmed { get; set; }
     
     public string? RefreshToken {  get; set; }
-    public DateTime RefreshTokenExpiry {  get; set; }
+    public DateTime? RefreshTokenExpiry {  get; set; }
 }

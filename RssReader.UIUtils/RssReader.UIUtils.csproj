@@ -8,6 +8,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Views\Emails\EmailVerificationOTP.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Views\Emails\EmailVerificationOTP.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 

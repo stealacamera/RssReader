@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Folders.Commands.Create;
 
@@ -32,20 +33,14 @@ internal class CreateFolderCommandHandler : BaseHandler, IRequestHandler<CreateF
 
     private async Task ValidateRequestAsync(CreateFolderCommand request, CancellationToken cancellationToken)
     {
-        // Validate properties
-        var validationDetails = await new CreateFolderCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Validate requester
-        if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.RequesterId, cancellationToken))
-            throw new EntityNotFoundException(nameof(User));
+        await new CreateFolderCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
         // Validate parent folder (if given) & ownership
         if (request.ParentFolderId.HasValue)
         {
-            var parentFolder = await _workUnit.FoldersRepository.GetByIdAsync(request.ParentFolderId.Value, cancellationToken);
+            var parentFolder = await _workUnit.FoldersRepository
+                                              .GetByIdAsync(request.ParentFolderId.Value, cancellationToken);
 
             if (parentFolder == null)
                 throw new EntityNotFoundException(nameof(Folder));

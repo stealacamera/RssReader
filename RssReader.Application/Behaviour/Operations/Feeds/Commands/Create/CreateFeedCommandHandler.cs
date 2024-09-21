@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Feeds.Commands.Create;
 
@@ -35,15 +36,8 @@ internal class CreateFeedCommandHandler : BaseHandler, IRequestHandler<CreateFee
     private async Task ValidateRequestAsync(CreateFeedCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new CreateFeedCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Validate user existence
-        if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId, cancellationToken))
-            throw new UnauthorizedException();
+        await new CreateFeedCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
         // Validate folder & ownership
         var folder = await _workUnit.FoldersRepository

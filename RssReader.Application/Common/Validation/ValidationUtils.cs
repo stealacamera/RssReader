@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using System.Text.RegularExpressions;
 
-namespace RssReader.Application.Common;
+namespace RssReader.Application.Common.Validation;
 
 internal static class ValidationUtils
 {

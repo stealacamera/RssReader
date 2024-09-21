@@ -24,7 +24,8 @@ internal class FolderConfiguration : IEntityTypeConfiguration<Folder>
 
         builder.HasOne<User>()
                .WithMany()
-               .IsRequired()
-               .OnDelete(DeleteBehavior.Restrict);
+               .HasForeignKey(e => e.OwnerId)
+               .OnDelete(DeleteBehavior.Restrict)
+               .IsRequired();
     }
 }

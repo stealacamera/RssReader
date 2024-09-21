@@ -1,5 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
+using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.FeedTags.Commands.AddTagToFeed;
 
@@ -7,9 +9,9 @@ public record AddTagToFeedCommand(
     int RequesterId,
     int TagId,
     int FeedId)
-    : IRequest;
+    : IRequest<FeedTag>;
 
-internal class AddTagToFeedCommandValidator : AbstractValidator<AddTagToFeedCommand>
+internal class AddTagToFeedCommandValidator : Validator<AddTagToFeedCommand>
 {
     public AddTagToFeedCommandValidator()
     {

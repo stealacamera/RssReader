@@ -1,19 +1,16 @@
 ﻿using FluentValidation;
 using MediatR;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Identity.Commands.UpdateTokens;
 
-public record UpdateTokensCommand(int RequesterId, string JwtToken, string RefreshToken) : IRequest<Tokens>;
+public record UpdateTokensCommand(string JwtToken, string RefreshToken) : IRequest<Tokens>;
 
-internal class UpdateTokensCommandValidator : AbstractValidator<UpdateTokensCommand>
+internal class UpdateTokensCommandValidator : Validator<UpdateTokensCommand>
 {
     public UpdateTokensCommandValidator()
     {
-        RuleFor(e => e.RequesterId)
-            .NotEmpty()
-            .GreaterThan(0);
-
         RuleFor(e => e.JwtToken)
             .NotEmpty();
 

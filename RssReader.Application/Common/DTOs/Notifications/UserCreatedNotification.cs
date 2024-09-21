@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Common.DTOs.Notifications;
 
 public record UserCreatedNotification(int UserId) : INotification;
 
-internal class UserCreatedNotificationValidator : AbstractValidator<UserCreatedNotification>
+internal class UserCreatedNotificationValidator : Validator<UserCreatedNotification>
 {
     public UserCreatedNotificationValidator()
     {

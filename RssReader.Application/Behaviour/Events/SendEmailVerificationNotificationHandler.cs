@@ -29,23 +29,27 @@ internal class SendEmailVerificationNotificationHandler : BaseHandler, INotifica
         if (user == null || user.IsEmailConfirmed)
             return;
 
-        // Update existing OTP or create a new one
+        var otp = await UpsertOTPAsync(user.Id, cancellationToken);
+        await _emailService.SendEmailVerificationEmailAsync(user.Email, otp.Password);
+    }
+
+    private async Task<Domain.Entities.OTP> UpsertOTPAsync(int userId, CancellationToken cancellationToken)
+    {
         var otp = await _workUnit.OTPsRepository
-                                 .GetByUserIdAsync(user.Id, cancellationToken) ??
+                                 .GetByUserIdAsync(userId, cancellationToken) ??
                                  new Domain.Entities.OTP();
 
         otp.Password = _workUnit.OTPsRepository.GenerateOTP();
         otp.ExpiryDate = DateTime.UtcNow.AddMinutes(5);
         otp.RetryAttempts = 0;
 
-        if(otp.UserId <= 0)
+        if (otp.UserId <= 0)
         {
-            otp.UserId = notification.UserId;
+            otp.UserId = userId;
             await _workUnit.OTPsRepository.AddAsync(otp, cancellationToken);
         }
-
-        // Send email
+                
         await _workUnit.SaveChangesAsync();
-        await _emailService.SendEmailVerificationEmailAsync(user.Email, otp.Password);
+        return otp;
     }
 }

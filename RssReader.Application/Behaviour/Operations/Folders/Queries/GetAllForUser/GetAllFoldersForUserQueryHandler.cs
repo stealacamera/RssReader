@@ -1,8 +1,8 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
 
 namespace RssReader.Application.Behaviour.Operations.Folders.Queries.GetAllForUser;
 
@@ -14,31 +14,15 @@ internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<G
 
     public async Task<IList<Folder>> Handle(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
     {
-        await ValidateRequest(request, cancellationToken);
+        // Validate request
+        await new GetAllFoldersForUserQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
         // Retrieve folders
         var userFolders = await _workUnit.FoldersRepository
-                                         .GetAllForUserAsync(request.UserId, cancellationToken);
+                                         .GetAllForUserAsync(request.RequesterId, cancellationToken);
 
-        return userFolders.Select(e => new Folder(e.Id, e.Name, request.UserId))
+        return userFolders.Select(e => new Folder(e.Id, e.Name, request.RequesterId))
                           .ToList();
-    }
-
-    private async Task ValidateRequest(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
-    {
-        // Validate request
-        var validationDetails = await new GetAllFoldersForUserQueryValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Validate user
-        if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.UserId, cancellationToken))
-            throw new EntityNotFoundException(nameof(User));
-
-        // Validate requester
-        if (!await _workUnit.UsersRepository.DoesInstanceExistAsync(request.RequesterId, cancellationToken) ||
-            request.UserId != request.RequesterId)
-            throw new UnauthorizedException();
     }
 }

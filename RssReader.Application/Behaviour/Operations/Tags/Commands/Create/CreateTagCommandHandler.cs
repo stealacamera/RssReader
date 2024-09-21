@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Tags.Commands.Create;
 
@@ -32,15 +33,7 @@ internal class CreateTagCommandHandler : BaseHandler, IRequestHandler<CreateTagC
 
     private async Task ValidateRequestAsync(CreateTagCommand request, CancellationToken cancellationToken)
     {
-        // Validate request properties
-        var validationDetails = await new CreateTagCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
-
-        // Validate user
-        if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId, cancellationToken))
-            throw new UnauthorizedException();
+        await new CreateTagCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
     }
 }

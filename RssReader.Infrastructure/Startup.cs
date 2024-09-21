@@ -22,7 +22,11 @@ public static class Startup
                     e.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     e.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
-                .AddJwtBearer();
+                .AddJwtBearer(options =>
+                {
+                    options.SaveToken = true;
+                    options.MapInboundClaims = false;
+                 });
 
         services.AddAuthorization();
 
@@ -40,7 +44,6 @@ public static class Startup
         configuration.GetSection(EmailOptions.SectionName).Bind(emailOptions);
 
         services.AddFluentEmail(emailOptions.Email)
-                //.AddRazorRenderer(typeof(Startup))
                 .AddSmtpSender(emailOptions.Host, emailOptions.Port, emailOptions.Email, emailOptions.Password);
     }
 

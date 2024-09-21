@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Tags.Commands.Edit;
 
@@ -18,7 +19,7 @@ public record EditTagCommand : IRequest<Tag>
     }
 }
 
-internal class EditTagCommandValidator : AbstractValidator<EditTagCommand>
+internal class EditTagCommandValidator : Validator<EditTagCommand>
 {
     public EditTagCommandValidator()
     {

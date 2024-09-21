@@ -22,8 +22,8 @@ internal sealed class JwtProvider : IJwtProvider
         var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
         return int.Parse(jwtToken.Claims
-                   .Single(e => e.Type == JwtRegisteredClaimNames.Sub)
-                   .Value);
+                                 .Single(e => e.Type == JwtRegisteredClaimNames.Sub)
+                                 .Value);
     }
 
     public string GenerateRefreshToken()

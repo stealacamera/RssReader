@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using MediatR;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.FeedTags.Commands.DeleteFeedTag;
 
 public record DeleteFeedTagCommand(int RequesterId, int TagId, int FeedId) : IRequest;
 
-internal class DeleteFeedTagCommandValidator : AbstractValidator<DeleteFeedTagCommand>
+internal class DeleteFeedTagCommandValidator : Validator<DeleteFeedTagCommand>
 {
     public DeleteFeedTagCommandValidator()
     {

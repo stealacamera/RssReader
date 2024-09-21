@@ -1,4 +1,5 @@
 ﻿using RssReader.Application.Abstractions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Common;
 
@@ -32,5 +33,12 @@ internal class BaseHandler
         }
 
         return result;
+    }
+
+    protected async Task ValidateRequesterAsync(int requesterId, CancellationToken cancellationToken)
+    {
+        if (!await _workUnit.UsersRepository
+                           .DoesInstanceExistAsync(requesterId, cancellationToken))
+            throw new UnauthorizedException();
     }
 }

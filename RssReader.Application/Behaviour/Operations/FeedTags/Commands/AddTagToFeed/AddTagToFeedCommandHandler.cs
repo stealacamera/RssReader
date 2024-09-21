@@ -1,18 +1,19 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
-using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.FeedTags.Commands.AddTagToFeed;
 
-internal class AddTagToFeedCommandHandler : BaseHandler, IRequestHandler<AddTagToFeedCommand>
+internal class AddTagToFeedCommandHandler : BaseHandler, IRequestHandler<AddTagToFeedCommand, FeedTag>
 {
     public AddTagToFeedCommandHandler(IWorkUnit workUnit) : base(workUnit)
     {
     }
 
-    public async Task Handle(AddTagToFeedCommand request, CancellationToken cancellationToken)
+    public async Task<FeedTag> Handle(AddTagToFeedCommand request, CancellationToken cancellationToken)
     {
         await ValidateRequestAsync(request, cancellationToken);
 
@@ -25,33 +26,34 @@ internal class AddTagToFeedCommandHandler : BaseHandler, IRequestHandler<AddTagT
                        }, cancellationToken);
 
         await _workUnit.SaveChangesAsync();
+        return new FeedTag(request.FeedId, request.TagId);
     }
 
     private async Task ValidateRequestAsync(AddTagToFeedCommand request, CancellationToken cancellationToken)
     {
-        // Validate request properties
-        var validationDetails = await new AddTagToFeedCommandValidator().ValidateAsync(request, cancellationToken);
+        await new AddTagToFeedCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
+        await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await ValidateTagAsync(request.TagId, request.RequesterId, cancellationToken);
+        await ValidateFeedAsync(request.FeedId, request.RequesterId, cancellationToken);
+    }
 
-        // Validate user
-        if (!await _workUnit.UsersRepository
-                            .DoesInstanceExistAsync(request.RequesterId, cancellationToken))
-            throw new UnauthorizedException();
-
-        // Validate tag ownership
+    private async Task ValidateTagAsync(int tagId, int requesterId, CancellationToken cancellationToken)
+    {
         var tag = await _workUnit.TagsRepository
-                                 .GetByIdAsync(request.TagId, cancellationToken);
+                                 .GetByIdAsync(tagId, cancellationToken);
 
         if (tag == null)
             throw new EntityNotFoundException(nameof(Tag));
-        else if (tag.OwnerId != request.RequesterId)
+        else if (tag.OwnerId != requesterId)
             throw new UnauthorizedException();
+    }
 
+    private async Task ValidateFeedAsync(int feedId, int requesterId, CancellationToken cancellationToken)
+    {
         // Validate feed
         var feed = await _workUnit.FeedsRepository
-                                  .GetByIdAsync(request.FeedId, cancellationToken);
+                                  .GetByIdAsync(feedId, cancellationToken);
 
         if (feed == null)
             throw new EntityNotFoundException(nameof(Feed));
@@ -60,7 +62,7 @@ internal class AddTagToFeedCommandHandler : BaseHandler, IRequestHandler<AddTagT
         var feedFolder = await _workUnit.FoldersRepository
                                         .GetByIdAsync(feed.FolderId, cancellationToken);
 
-        if (feedFolder!.OwnerId != request.RequesterId)
+        if (feedFolder!.OwnerId != requesterId)
             throw new UnauthorizedException();
     }
 }

@@ -1,8 +1,10 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
 using RssReader.Application.Common.Exceptions;
+using RssReader.Application.Common.Exceptions.General;
 
 namespace RssReader.Application.Behaviour.Operations.Identity.Commands.VerifyOTP;
 
@@ -41,13 +43,11 @@ internal class VerifyOTPCommandHandler : BaseHandler, IRequestHandler<VerifyOTPC
     private async Task<Domain.Entities.OTP> ValidateRequestAsync(VerifyOTPCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
-        var validationDetails = await new ValidateOTPCommandValidator().ValidateAsync(request, cancellationToken);
-
-        if (!validationDetails.IsValid)
-            throw new ValidationException(validationDetails.ToDictionary());
+        await new ValidateOTPCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
 
         // Validate user
-        var requester = await _workUnit.UsersRepository.GetByIdAsync(request.RequesterId);
+        var requester = await _workUnit.UsersRepository
+                                       .GetByIdAsync(request.RequesterId);
 
         if (requester == null)
             throw new EntityNotFoundException(nameof(User));
@@ -58,9 +58,7 @@ internal class VerifyOTPCommandHandler : BaseHandler, IRequestHandler<VerifyOTPC
         var otp = await _workUnit.OTPsRepository
                                  .GetByUserIdAsync(request.RequesterId);
 
-        if (otp == null)
-            throw new EntityNotFoundException("OTP");
-        else if (otp.RetryAttempts >= 3 || otp.ExpiryDate < DateTime.UtcNow)
+        if (otp == null || otp.RetryAttempts >= 3 || otp.ExpiryDate < DateTime.UtcNow)
             throw new InvalidOTPException();
 
         return otp;

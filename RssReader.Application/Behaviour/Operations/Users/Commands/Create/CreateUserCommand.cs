@@ -1,7 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
-using RssReader.Application.Common;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.Create;
 
@@ -19,7 +19,7 @@ public record CreateUserCommand : IRequest<User>
     }
 }
 
-internal class CreateUserCommandValidator : AbstractValidator<CreateUserCommand>
+internal class CreateUserCommandValidator : Validator<CreateUserCommand>
 {
     public CreateUserCommandValidator()
     {

@@ -18,10 +18,19 @@ Log.Logger = new LoggerConfiguration().ReadFrom
                                       .Configuration(builder.Configuration)
                                       .CreateLogger();
 
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(StartupUtils.RegisterSwagger);
+
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
 app.UseHttpsRedirection();
-app.UseCors(RssReader.API.Common.Startup.CorsPolicyName);
+app.UseCors(StartupUtils.CorsPolicyName);
 
 app.MapCarter();
 
@@ -31,6 +40,3 @@ app.UseAuthorization();
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.Run();
-
-
-// TODO fix emailing

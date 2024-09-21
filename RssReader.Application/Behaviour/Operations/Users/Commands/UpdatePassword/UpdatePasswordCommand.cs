@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 using MediatR;
-using RssReader.Application.Common;
+using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.UpdatePassword;
 
@@ -10,7 +10,7 @@ public record UpdatePasswordCommand(
     string NewPassword)
     : IRequest;
 
-internal class UpdatePasswordCommandValidator : AbstractValidator<UpdatePasswordCommand>
+internal class UpdatePasswordCommandValidator : Validator<UpdatePasswordCommand>
 {
     public UpdatePasswordCommandValidator()
     {

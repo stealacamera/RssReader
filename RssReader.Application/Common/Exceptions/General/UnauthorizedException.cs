@@ -1,4 +1,4 @@
-﻿namespace RssReader.Application.Common.Exceptions;
+﻿namespace RssReader.Application.Common.Exceptions.General;
 
 public class UnauthorizedException : BaseException
 {

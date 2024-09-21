@@ -5,29 +5,8 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Email\Templates\EmailVerificationOTP.cshtml" />
-    <None Remove="Email\Templates\Shared\_EmailLayout.cshtml" />
-    <None Remove="Email\Templates\_ViewStart.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Email\Templates\EmailVerificationOTP.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Email\Templates\Shared\_EmailLayout.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-    <Content Include="Email\Templates\_ViewStart.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
+	
+	<ItemGroup>
     <PackageReference Include="FluentEmail.Core" Version="3.0.2" />
     <PackageReference Include="FluentEmail.Razor" Version="3.0.2" />
     <PackageReference Include="FluentEmail.Smtp" Version="3.0.2" />
@@ -46,7 +25,6 @@
     <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.4" />
     <PackageReference Include="Razor.Templating.Core" Version="2.0.0" />
-    <PackageReference Include="RazorLight" Version="2.3.1" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.0.1" />
   </ItemGroup>
 
