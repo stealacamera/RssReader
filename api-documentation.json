@@ -717,9 +717,12 @@
             "type": "string",
             "nullable": true
           },
-          "ownerId": {
-            "type": "integer",
-            "format": "int32"
+          "feeds": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Feed"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -759,9 +762,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {
-
-        }
+        "additionalProperties": { }
       },
       "LoggedInUser": {
         "type": "object",
@@ -814,9 +815,7 @@
             "nullable": true
           }
         },
-        "additionalProperties": {
-
-        }
+        "additionalProperties": { }
       },
       "RefreshTokensRequest": {
         "type": "object",
@@ -918,7 +917,7 @@
   },
   "security": [
     {
-      "Bearer": []
+      "Bearer": [ ]
     }
   ]
 }
