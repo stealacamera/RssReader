@@ -1,3 +1,7 @@
+- [ ] add redis
+- [ ] switch auth0
+- [ ] dockerize
+
 # RssReader
 
 Rss reader .Net minimal API coupled with an Angular UI
