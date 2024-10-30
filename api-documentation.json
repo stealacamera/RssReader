@@ -5,6 +5,45 @@
     "version": "1.0"
   },
   "paths": {
+    "/feedItems": {
+      "get": {
+        "tags": [
+          "FeedItemsModule"
+        ],
+        "summary": "Gets all items from all of the user's feeds",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeFeedItemIListPaginatedResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/feeds": {
       "post": {
         "tags": [
@@ -40,15 +79,15 @@
         }
       }
     },
-    "/feeds/{id}/tags": {
+    "/feedSubscriptions/{subscriptionId}/tags": {
       "post": {
         "tags": [
-          "FeedsModule"
+          "FeedSubscriptionsModule"
         ],
         "summary": "Adds tag to a feed",
         "parameters": [
           {
-            "name": "id",
+            "name": "subscriptionId",
             "in": "path",
             "required": true,
             "schema": {
@@ -79,15 +118,68 @@
         }
       }
     },
-    "/feeds/{feedId}/tags/{tagId}": {
+    "/feedSubscriptions/{id}/items": {
+      "get": {
+        "tags": [
+          "FeedSubscriptionsModule"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeFeedItemIListPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/feedSubscriptions/{subscriptionId}/tags/{tagId}": {
       "delete": {
         "tags": [
-          "FeedsModule"
+          "FeedSubscriptionsModule"
         ],
         "summary": "Removes tag from a feed",
         "parameters": [
           {
-            "name": "feedId",
+            "name": "subscriptionId",
             "in": "path",
             "required": true,
             "schema": {
@@ -151,14 +243,33 @@
             "description": "Not Found"
           }
         }
-      }
-    },
-    "/folders/{id}/children": {
+      },
       "get": {
         "tags": [
           "FoldersModule"
         ],
-        "description": "Gets subfolders",
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SimpleFolder"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folders/{id}": {
+      "get": {
+        "tags": [
+          "FoldersModule"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -176,10 +287,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Folder"
-                  }
+                  "$ref": "#/components/schemas/Folder"
                 }
               }
             }
@@ -191,14 +299,11 @@
             "description": "Not Found"
           }
         }
-      }
-    },
-    "/folders/{id}/feeds": {
-      "get": {
+      },
+      "delete": {
         "tags": [
           "FoldersModule"
         ],
-        "description": "Gets all feeds in a folder",
         "parameters": [
           {
             "name": "id",
@@ -211,15 +316,99 @@
           }
         ],
         "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/folders/{id}/feeds": {
+      "post": {
+        "tags": [
+          "FoldersModule"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubscribeToFeedRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FeedSubscription"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folders/{id}/feedItems": {
+      "get": {
+        "tags": [
+          "FoldersModule"
+        ],
+        "summary": "Gets all feed items for the given folder and its subfolders",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
           "200": {
             "description": "OK",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Feed"
-                  }
+                  "$ref": "#/components/schemas/DateTimeFeedItemIListPaginatedResponse"
                 }
               }
             }
@@ -433,7 +622,60 @@
         }
       }
     },
+    "/identity/password": {
+      "put": {
+        "tags": [
+          "IdentityModule"
+        ],
+        "description": "Updates account password",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangePasswordRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/tags": {
+      "get": {
+        "tags": [
+          "TagsModule"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Tag"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "TagsModule"
@@ -509,6 +751,86 @@
             "description": "Not Found"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "TagsModule"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/tags/{id}/feedItems": {
+      "get": {
+        "tags": [
+          "TagsModule"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "cursor",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DateTimeFeedItemIListPaginatedResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
       }
     },
     "/users": {
@@ -533,83 +855,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          }
-        }
-      }
-    },
-    "/users/password": {
-      "put": {
-        "tags": [
-          "UsersModule"
-        ],
-        "description": "Updates account password",
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ChangePasswordRequest"
-              }
-            }
-          },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "400": {
-            "description": "Bad Request",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/tags": {
-      "get": {
-        "tags": [
-          "UsersModule"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Tag"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/users/folders": {
-      "get": {
-        "tags": [
-          "UsersModule"
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Folder"
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -664,6 +909,24 @@
         },
         "additionalProperties": false
       },
+      "DateTimeFeedItemIListPaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "nextCursor": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FeedItem"
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
       "EditUserRequest": {
         "type": "object",
         "properties": {
@@ -702,6 +965,70 @@
           "name": {
             "type": "string",
             "nullable": true
+          },
+          "iconUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedItem": {
+        "type": "object",
+        "properties": {
+          "feedName": {
+            "type": "string",
+            "nullable": true
+          },
+          "feedIconUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "author": {
+            "type": "string",
+            "nullable": true
+          },
+          "link": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "content": {
+            "type": "string",
+            "nullable": true
+          },
+          "publishedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "FeedSubscription": {
+        "type": "object",
+        "properties": {
+          "feedSubscriptionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "subscriptionName": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Tag"
+            },
+            "nullable": true
           }
         },
         "additionalProperties": false
@@ -717,10 +1044,17 @@
             "type": "string",
             "nullable": true
           },
+          "subfolders": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/SimpleFolder"
+            },
+            "nullable": true
+          },
           "feeds": {
             "type": "array",
             "items": {
-              "$ref": "#/components/schemas/Feed"
+              "$ref": "#/components/schemas/FeedSubscription"
             },
             "nullable": true
           }
@@ -762,7 +1096,9 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {
+
+        }
       },
       "LoggedInUser": {
         "type": "object",
@@ -815,7 +1151,9 @@
             "nullable": true
           }
         },
-        "additionalProperties": { }
+        "additionalProperties": {
+
+        }
       },
       "RefreshTokensRequest": {
         "type": "object",
@@ -843,6 +1181,34 @@
             "nullable": true
           },
           "username": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SimpleFolder": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "SubscribeToFeedRequest": {
+        "type": "object",
+        "properties": {
+          "feedUrl": {
+            "type": "string",
+            "nullable": true
+          },
+          "feedName": {
             "type": "string",
             "nullable": true
           }
@@ -917,7 +1283,7 @@
   },
   "security": [
     {
-      "Bearer": [ ]
+      "Bearer": []
     }
   ]
 }
