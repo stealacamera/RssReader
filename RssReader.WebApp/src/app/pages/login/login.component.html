@@ -1,0 +1,32 @@
+<div class="container-fluid ps-5 pt-5">
+    <div class="row">
+        <form [formGroup]="form" class="p-5 col-4" (ngSubmit)="login()">    
+            <h4>Welcome back!</h4>
+            
+            <div class="mb-3">
+                <label for="email" class="form-label">Email:</label>
+                <input type="email" class="form-control" formControlName="email" required />
+                <control-error controlName="email" />
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" formControlName="password" required />
+                <control-error controlName="password" />
+            </div>
+
+            <div class="text-danger">
+                <ul>
+                    @for(error of errors; track error) {
+                        <li>{{error}}</li>
+                    }
+                </ul>
+            </div>
+
+            <button type="submit" [disabled]="!form.valid" class="btn btn-primary">Log in</button>
+        </form>
+        <div class="col text-center">
+            <img src="/images/login.png"/>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,12 @@
+summary > * {
+  display: inline;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}

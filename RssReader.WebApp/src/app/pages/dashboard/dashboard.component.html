@@ -1,0 +1,85 @@
+<main class="container-fluid">
+    <div class="row g-3">
+        @if(formErrors.length != 0) {
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <ul>
+                    @for(error of formErrors; track error) {
+                        <li>{{error}}</li>    
+                    }
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        }
+
+        <section id="folders" class="col-lg-3 col-md-6 border border-dark-subtle rounded p-3">
+            <ul class="list-group list-group-flush"> 
+                <li class="list-group-item d-flex flex-wrap align-items-center gap-2">
+                    <button title="Home" (click)="showFeedItemsForUser()" type="button" class="btn btn-lg btn-link link-primary px-0">
+                        <i class="fa-solid fa-house"></i> 
+                    </button>
+
+                    <div class="dropdown">
+                        <button title="Your tags" class="btn btn-lg btn-link link-body-emphasis dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-tags"></i>
+                        </button>
+
+                        <ul id="user-tags" class="dropdown-menu list-inline p-3">
+                            @if(tags == null) {
+                                <div class="spinner-border spinner-border-sm text-secondary mt-3" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            }
+                            @else {
+                                @for(tag of tags; track tag.id) {
+                                    <li class="list-inline-item">
+                                        <button (click)="showFeedItemsForTag(tag.id)" type="button" class="btn badge rounded-pill bg-primary bg-opacity-75 py-2 px-3 mb-1">
+                                            {{tag.name}}
+                                        </button>
+                                    </li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                </li>
+                <li class="list-group-item">
+                    <form [formGroup]="addFolderForm" class="my-2">
+                        <div class="input-group input-group-sm">
+                            <button title="Add a new folder" (click)="toggleFolderForm($event)" id="folderInputToggle" type="button" class="btn btn-dark px-3 py-2 rounded-end-1">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                            <input formControlName="name" (keyup.enter)="addFolder()" id="folderInput" type="text" placeholder="New folder name" class="form-control d-none"/>
+                        </div>
+                    </form>
+
+                    @if(folders == null) {
+                        <div class="spinner-border spinner-border-sm text-secondary mt-3" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    }
+                    @else {
+                        @for(folder of folders; track folder.id) {
+                            <app-folder [entity]="folder" (showFeedFeedItemsEvent)="showFeedItemsForFeed($event)" (showFolderFeedItemsEvent)="showFeedItemsForFolder($event)" (removeEvent)="deleteFolder($event)" (tagCreatedEvent)="addNewTag($event)"></app-folder>
+                        } @empty {
+                            <p>No folders</p>
+                        }
+                    }
+                </li>
+            </ul>
+        </section>
+        
+        <section id="feed" (scroll)="feedOnScroll()" class="col d-flex flex-wrap row-gap-3 justify-content-evenly align-items-stretch">
+            @if(!feedItems) {
+                <div class="spinner-border text-secondary mt-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            }    
+            @else {
+                @for(feedItem of feedItems; track feedItem) {
+                    <app-feed-item [entity]="feedItem" [indexNr]="$index"/>
+                } @empty {
+                    <p>No feeds</p>
+                }
+            }
+            </section>
+    </div>
+</main>

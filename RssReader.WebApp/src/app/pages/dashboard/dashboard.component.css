@@ -1,0 +1,16 @@
+#feed {
+    height: 85vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+#folders {
+    height: 85vh;
+    overflow-y: scroll;
+    scrollbar-width: none;
+}
+
+#user-tags {
+    max-height: 15em;
+    overflow-y: scroll;
+}
