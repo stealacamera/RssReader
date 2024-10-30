@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Storage;
 using RssReader.Application.Abstractions.Repositories;
+using RssReader.Application.Abstractions.Repositories.Identity;
 
 namespace RssReader.Application.Abstractions;
 
@@ -9,9 +10,17 @@ public interface IWorkUnit
     Task<IDbContextTransaction> BeginTransactionAsync();
 
     IUsersRepository UsersRepository { get; }
-    IFoldersRepository FoldersRepository { get; }
-    IFeedsRepository FeedsRepository { get; }
-    ITagsRepository TagsRepository { get; }
-    IFeedTagsRepository FeedTagsRepository { get; }
+    IUserRolesRepository UserRolesRepository { get; }
+    IRolePermissionsRepository RolePermissionsRepository { get; }
     IOTPsRepository OTPsRepository { get; }
+
+    #region Feeds
+    IFeedsRepository FeedsRepository { get; }
+    IFeedItemsRepository FeedItemsRepository { get; }
+    IFeedSubscriptionsRepository FeedSubscriptionsRepository { get; }
+    #endregion
+
+    IFoldersRepository FoldersRepository { get; }
+    ITagsRepository TagsRepository { get; }
+    IFeedSubscriptionTagsRepository FeedSubscriptionTagsRepository { get; }
 }

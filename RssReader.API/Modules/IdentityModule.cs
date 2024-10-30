@@ -10,7 +10,9 @@ using RssReader.Application.Behaviour.Operations.Identity.Commands.ResendEmailVe
 using RssReader.Application.Behaviour.Operations.Identity.Commands.UpdateTokens;
 using RssReader.Application.Behaviour.Operations.Identity.Commands.VerifyOTP;
 using RssReader.Application.Behaviour.Operations.Users.Commands.Create;
+using RssReader.Application.Behaviour.Operations.Users.Commands.UpdatePassword;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Enums;
 using RssReader.Application.Common.Exceptions;
 using RssReader.Application.Common.Exceptions.General;
 
@@ -24,39 +26,42 @@ public class IdentityModule : BaseCarterModule
 
     public override void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapPost("signup", Signup)
+        app.MapPost("signup", SignupAsync)
            .ProducesValidationProblem();
 
-        app.MapPost("login", Login)
+        app.MapPost("login", LoginAsync)
            .ProducesValidationProblem();
 
-        app.MapPost("logout", Logout)
+        app.MapPost("logout", LogoutAsync)
            .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPost("verification", VerifyEmail)
+        app.MapPost("verification", VerifyEmailAsync)
            .WithSummary("Verifies account email")
            .Produces(StatusCodes.Status404NotFound)
            .Produces(StatusCodes.Status401Unauthorized)
            .ProducesValidationProblem();
 
-        app.MapPut("verification", ResendEmailVerification)
+        app.MapPut("verification", ResendEmailVerificationAsync)
            .WithSummary("Resends account verification token email")
            .Produces(StatusCodes.Status404NotFound);
 
-        app.MapPost("tokens", RefreshTokens)
+        app.MapPost("tokens", RefreshTokensAsync)
            .WithSummary("Refreshes user tokens")
            .ProducesValidationProblem();
+
+        app.MapPut("password", ChangePasswordAsync)
+           .WithDescription("Updates account password");
     }
 
     /// <response code="400">Existing email or validation errors</response>
-    private async Task<Results<Created<User>, BadRequest<ProblemDetails>>> Signup(
+    private async Task<Results<Created<User>, BadRequest<ProblemDetails>>> SignupAsync(
         SignupRequest request,
         ISender sender,
         CancellationToken cancellationToken)
     {
         try
         {
-            var command = new CreateUserCommand(request.Email, request.Password, request.Username);
+            var command = new CreateUserCommand(request.Email, request.Password, Roles.User, request.Username);
             var user = await sender.Send(command, cancellationToken);
 
             return TypedResults.Created(string.Empty, user);
@@ -74,7 +79,7 @@ public class IdentityModule : BaseCarterModule
 
     /// <response code="401">Email is unconfirmed</response>
     /// <response code="400">Incorrect credentials or validation errors</response>
-    private async Task<Results<Ok<LoggedInUser>, BadRequest<ProblemDetails>>> Login(
+    private async Task<Results<Ok<LoggedInUser>, BadRequest<ProblemDetails>>> LoginAsync(
         LoginRequest request,
         ISender sender,
         CancellationToken cancellationToken)
@@ -93,7 +98,10 @@ public class IdentityModule : BaseCarterModule
         }
     }
 
-    private async Task<Ok> Logout(ISender sender, HttpContext httpContext, CancellationToken cancellationToken)
+    private async Task<Ok> LogoutAsync(
+        ISender sender, 
+        HttpContext httpContext, 
+        CancellationToken cancellationToken)
     {
         var command = new LogoutCommand(GetRequesterId(httpContext));
         await sender.Send(command);
@@ -104,7 +112,7 @@ public class IdentityModule : BaseCarterModule
     /// <response code="404">User could not be found</response>
     /// <response code="400">Incorrect or invalid OTP, or validation errors</response>
     /// <response code="401">Email is already confirmed</response>
-    private async Task<Results<Accepted, BadRequest<ProblemDetails>>> VerifyEmail(
+    private async Task<Results<Accepted, BadRequest<ProblemDetails>>> VerifyEmailAsync(
         EmailVerificationRequest request,
         ISender sender,
         CancellationToken cancellationToken)
@@ -125,7 +133,7 @@ public class IdentityModule : BaseCarterModule
         }
     }
 
-    private async Task<Ok> ResendEmailVerification(
+    private async Task<Ok> ResendEmailVerificationAsync(
         int userId,
         ISender sender,
         CancellationToken cancellationToken)
@@ -137,7 +145,7 @@ public class IdentityModule : BaseCarterModule
     }
 
     /// <response code="400">Invalid tokens, or validation errors</response>
-    private async Task<Results<Ok<Tokens>, BadRequest<ProblemDetails>>> RefreshTokens(
+    private async Task<Results<Ok<Tokens>, BadRequest<ProblemDetails>>> RefreshTokensAsync(
         RefreshTokensRequest request,
         ISender sender,
         CancellationToken cancellationToken)
@@ -160,6 +168,30 @@ public class IdentityModule : BaseCarterModule
         {
             return TypedResults.BadRequest(
                 new ProblemDetails { Title = "Expired refresh token" });
+        }
+    }
+
+    private async Task<Results<Ok, BadRequest<ProblemDetails>>> ChangePasswordAsync(
+        ChangePasswordRequest request,
+        ISender sender,
+        HttpContext httpContext,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new UpdatePasswordCommand(GetRequesterId(httpContext), request.OldPassword, request.NewPassword);
+            await sender.Send(command, cancellationToken);
+
+            return TypedResults.Ok();
+        }
+        catch (FailedPasswordVerification)
+        {
+            return TypedResults.BadRequest(
+                new ProblemDetails
+                {
+                    Title = "Incorrect password",
+                    Detail = "The password provided is incorrect"
+                });
         }
     }
 }

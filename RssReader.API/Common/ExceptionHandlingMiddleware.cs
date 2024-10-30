@@ -15,6 +15,7 @@ internal class ExceptionHandlingMiddleware : IMiddleware
         {
             { typeof(EntityNotFoundException), (StatusCodes.Status404NotFound, "Entity not found") },
             { typeof(UnauthorizedException), (StatusCodes.Status401Unauthorized, "Unauthorized access") },
+            { typeof(InvalidFeedUrlException), (StatusCodes.Status400BadRequest, "Feed URL is invalid")}
         };
     }
 

@@ -2,7 +2,10 @@
 
 namespace RssReader.Application.Abstractions.Repositories;
 
-public interface IFeedsRepository : IBaseSimpleRepository<Feed>
+public interface IFeedsRepository : IBaseSimpleRepository<int, Feed>
 {
-    Task<IList<Feed>> GetAllForFolderAsync(int folderId, CancellationToken cancellationToken = default);
+    Task<Feed?> GetByUrlAsync(string url, CancellationToken cancellationToken = default);
+    Task<bool> IsUrlRegisteredAsync(string url, CancellationToken cancellationToken = default);
+
+    Task<int[]> GetAllIdsAsync(CancellationToken cancellationToken = default);
 }

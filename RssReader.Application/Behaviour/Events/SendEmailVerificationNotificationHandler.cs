@@ -33,11 +33,11 @@ internal class SendEmailVerificationNotificationHandler : BaseHandler, INotifica
         await _emailService.SendEmailVerificationEmailAsync(user.Email, otp.Password);
     }
 
-    private async Task<Domain.Entities.OTP> UpsertOTPAsync(int userId, CancellationToken cancellationToken)
+    private async Task<Domain.Entities.Identity.OTP> UpsertOTPAsync(int userId, CancellationToken cancellationToken)
     {
         var otp = await _workUnit.OTPsRepository
                                  .GetByUserIdAsync(userId, cancellationToken) ??
-                                 new Domain.Entities.OTP();
+                                 new Domain.Entities.Identity.OTP();
 
         otp.Password = _workUnit.OTPsRepository.GenerateOTP();
         otp.ExpiryDate = DateTime.UtcNow.AddMinutes(5);

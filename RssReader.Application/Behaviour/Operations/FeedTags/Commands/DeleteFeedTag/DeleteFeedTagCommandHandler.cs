@@ -17,24 +17,24 @@ internal class DeleteFeedTagCommandHandler : BaseHandler, IRequestHandler<Delete
     {
         var feedTag = await ValidateRequestAsync(request, cancellationToken);
         
-        _workUnit.FeedTagsRepository.Delete(feedTag);
+        _workUnit.FeedSubscriptionTagsRepository.Delete(feedTag);
         await _workUnit.SaveChangesAsync();
     }
 
-    private async Task<Domain.Entities.FeedTag> ValidateRequestAsync(DeleteFeedTagCommand request, CancellationToken cancellationToken)
+    private async Task<Domain.Entities.FeedSubscriptionTag> ValidateRequestAsync(DeleteFeedTagCommand request, CancellationToken cancellationToken)
     {
         await new DeleteFeedTagCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
         await ValidateRequesterAsync(request.RequesterId, cancellationToken);
 
+        await ValidateFeedSubscriptionAsync(request.FeedSubscriptionId, request.RequesterId, cancellationToken);
+        await ValidateTagAsync(request.TagId, request.RequesterId, cancellationToken);
+
         // Validate feed tag
-        var feedTag = await _workUnit.FeedTagsRepository
-                                     .GetByIdsAsync(request.FeedId, request.TagId, cancellationToken);
+        var feedTag = await _workUnit.FeedSubscriptionTagsRepository
+                                     .GetByIdsAsync(request.TagId, request.FeedSubscriptionId, cancellationToken);
 
         if (feedTag == null)
             throw new EntityNotFoundException("Feed's tag");
-
-        await ValidateTagAsync(request.TagId, request.RequesterId, cancellationToken);
-        await ValidateFeedAsync(request.FeedId, request.RequesterId, cancellationToken);
 
         return feedTag;
     }
@@ -50,19 +50,18 @@ internal class DeleteFeedTagCommandHandler : BaseHandler, IRequestHandler<Delete
             throw new UnauthorizedException();
     }
 
-    private async Task ValidateFeedAsync(int feedId, int requesterId, CancellationToken cancellationToken)
+    private async Task ValidateFeedSubscriptionAsync(int feedSubscriptionId, int requesterId, CancellationToken cancellationToken)
     {
-        var feed = await _workUnit.FeedsRepository
-                                  .GetByIdAsync(feedId, cancellationToken);
+        var subscription = await _workUnit.FeedSubscriptionsRepository
+                                          .GetByIdAsync(feedSubscriptionId, cancellationToken);
 
-        if (feed == null)
+        if (subscription == null)
             throw new EntityNotFoundException(nameof(Feed));
 
-        // Validate ownership
-        var folder = await _workUnit.FoldersRepository
-                                    .GetByIdAsync(feed.FolderId, cancellationToken);
+        var subscriptionFolder = (await _workUnit.FoldersRepository
+                                                .GetByIdAsync(subscription.FolderId, cancellationToken))!;
 
-        if (folder!.OwnerId != requesterId)
+        if (subscriptionFolder.OwnerId != requesterId)
             throw new UnauthorizedException();
     }
 }

@@ -48,9 +48,9 @@ internal class LoginCommandHandler : BaseHandler, IRequestHandler<LoginCommand, 
             throw new UnauthorizedException();
     }
 
-    private bool IsPasswordCorrect(Domain.Entities.User user, string password)
+    private bool IsPasswordCorrect(Domain.Entities.Identity.User user, string password)
     {
-        PasswordHasher<Domain.Entities.User> passwordHasher = new();
+        PasswordHasher<Domain.Entities.Identity.User> passwordHasher = new();
         var passwordVerification = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, password);
 
         return passwordVerification != PasswordVerificationResult.Failed;

@@ -3,8 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RssReader.Application.Abstractions;
-using RssReader.Infrastructure.Authentication;
-using RssReader.Infrastructure.Email;
+using RssReader.Infrastructure.Misc;
 using RssReader.Infrastructure.Options;
 using RssReader.Infrastructure.Options.Setups;
 
@@ -14,28 +13,36 @@ public static class Startup
 {
     public static void RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("ApiDbConnection")));
-
-        services.AddAuthentication(e =>
-                {
-                    e.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    e.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    e.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                })
-                .AddJwtBearer(options =>
-                {
-                    options.SaveToken = true;
-                    options.MapInboundClaims = false;
-                 });
-
-        services.AddAuthorization();
+        RegisterIdentity(services, configuration);
 
         RegisterOptions(services);
         RegisterEmail(services, configuration);
 
+        services.AddStackExchangeRedisCache(options => options.Configuration = configuration.GetConnectionString("Redis"));
+
         services.AddScoped<IJwtProvider, JwtProvider>();
         services.AddScoped<IWorkUnit, WorkUnit>();
         services.AddTransient<IEmailService, EmailService>();
+        services.AddScoped<IAuthorizationService, AuthorizationService>();
+    }
+
+    private static void RegisterIdentity(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddDbContext<AppDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("Database")));
+
+        services.AddAuthentication(e =>
+        {
+            e.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            e.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            e.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.SaveToken = true;
+            options.MapInboundClaims = false;
+        });
+
+        services.AddAuthorization();
     }
 
     private static void RegisterEmail(IServiceCollection services, IConfiguration configuration)

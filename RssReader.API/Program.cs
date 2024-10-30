@@ -2,24 +2,16 @@ using Carter;
 using RssReader.API.Common;
 using RssReader.Application;
 using RssReader.Infrastructure;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.RegisterCors();
 builder.Services.RegisterApplicationServices();
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
+builder.Services.RegisterPresentationServices(builder.Configuration);
 
-builder.Services.AddCarter();
-builder.Services.RegisterQuartzServices();
-builder.Services.AddTransient<ExceptionHandlingMiddleware>();
-
-Log.Logger = new LoggerConfiguration().ReadFrom
-                                      .Configuration(builder.Configuration)
-                                      .CreateLogger();
+builder.RegisterSerilog(builder.Configuration);
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(StartupUtils.RegisterSwagger);
 
 var app = builder.Build();
 

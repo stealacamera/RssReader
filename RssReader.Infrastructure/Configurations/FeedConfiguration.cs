@@ -10,21 +10,29 @@ internal class FeedConfiguration : IEntityTypeConfiguration<Feed>
     {
         builder.HasKey(e => e.Id);
         
+
         builder.Property(e => e.Url)
                .IsRequired()
                .HasMaxLength(200);
 
+        builder.HasIndex(e => e.Url)
+               .IsUnique();
+
+
         builder.Property(e => e.Name)
-               .IsRequired()
-               .HasMaxLength(80);
+               .HasMaxLength(80)
+               .IsRequired();
 
         builder.Property(e => e.CreatedAt)
                .IsRequired();
 
-        builder.HasOne<Folder>()
-            .WithMany()
-            .HasForeignKey(e => e.FolderId)
-            .OnDelete(DeleteBehavior.Restrict)
-            .IsRequired();
+        builder.Property(e => e.Update_ETag)
+               .HasMaxLength(2000);
+
+        builder.Property(e => e.Update_LastModified)
+               .HasMaxLength(35);
+
+        builder.Property(e => e.IconUrl)
+               .HasMaxLength(600);
     }
 }

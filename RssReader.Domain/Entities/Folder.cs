@@ -2,7 +2,7 @@
 
 namespace RssReader.Domain.Entities;
 
-public class Folder : BaseSimpleEntity
+public class Folder : BaseSimpleEntity<int>
 {
     public string Name { get; set; } = null!;
     public int? ParentId { get; set; }

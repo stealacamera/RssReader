@@ -5,7 +5,7 @@ using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Folders.Queries.GetAllForUser;
 
-public record GetAllFoldersForUserQuery(int RequesterId) : IRequest<IList<Folder>>;
+public record GetAllFoldersForUserQuery(int RequesterId) : IRequest<IList<SimpleFolder>>;
 
 internal class GetAllFoldersForUserQueryValidator : Validator<GetAllFoldersForUserQuery>
 {

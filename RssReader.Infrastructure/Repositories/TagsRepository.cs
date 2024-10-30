@@ -4,7 +4,7 @@ using RssReader.Domain.Entities;
 
 namespace RssReader.Infrastructure.Repositories;
 
-internal class TagsRepository : BaseSimpleRepository<Tag>, ITagsRepository
+internal class TagsRepository : BaseSimpleRepository<int, Tag>, ITagsRepository
 {
     public TagsRepository(AppDbContext dbContext) : base(dbContext)
     {
@@ -12,7 +12,7 @@ internal class TagsRepository : BaseSimpleRepository<Tag>, ITagsRepository
 
     public async Task<IEnumerable<Tag>> GetAllForUserAsync(int requesterId, CancellationToken cancellationToken = default)
     {
-        var query = _set.Where(e => e.OwnerId == requesterId);
+        var query = _untrackedSet.Where(e => e.OwnerId == requesterId);
         return await query.ToListAsync(cancellationToken);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace RssReader.Application.Abstractions;
+﻿using RssReader.Domain.Entities.Identity;
+
+namespace RssReader.Application.Abstractions;
 
 public interface IJwtProvider
 {
@@ -7,5 +9,5 @@ public interface IJwtProvider
     string GenerateToken(int userId, string userEmail);
     string GenerateRefreshToken();
 
-    void UpdateRefreshTokens(Domain.Entities.User user);
+    void UpdateRefreshTokens(User user);
 }

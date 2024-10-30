@@ -4,7 +4,7 @@ using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.FeedTags.Commands.DeleteFeedTag;
 
-public record DeleteFeedTagCommand(int RequesterId, int TagId, int FeedId) : IRequest;
+public record DeleteFeedTagCommand(int RequesterId, int TagId, int FeedSubscriptionId) : IRequest;
 
 internal class DeleteFeedTagCommandValidator : Validator<DeleteFeedTagCommand>
 {
@@ -18,7 +18,7 @@ internal class DeleteFeedTagCommandValidator : Validator<DeleteFeedTagCommand>
             .NotEmpty()
             .GreaterThan(0);
 
-        RuleFor(e => e.FeedId)
+        RuleFor(e => e.FeedSubscriptionId)
             .NotEmpty()
             .GreaterThan(0);
     }

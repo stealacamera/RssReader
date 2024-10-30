@@ -7,7 +7,8 @@ namespace RssReader.Application.Behaviour.Operations.Users.Commands.Edit;
 public record EditUserCommand : IRequest
 {
     public int RequesterId { get; }
-    public string Username { get; } 
+    public string Username { get; }
+
     public EditUserCommand(int requesterId, string username)
     {
         RequesterId = requesterId; 

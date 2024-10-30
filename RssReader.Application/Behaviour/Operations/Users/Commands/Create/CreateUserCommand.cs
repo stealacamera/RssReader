@@ -1,6 +1,7 @@
 ﻿using FluentValidation;
 using MediatR;
 using RssReader.Application.Common.DTOs;
+using RssReader.Application.Common.Enums;
 using RssReader.Application.Common.Validation;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.Create;
@@ -11,11 +12,20 @@ public record CreateUserCommand : IRequest<User>
     public string Password { get; }
     public string? Username { get; }
 
-    public CreateUserCommand(string email, string password, string? username = null)
+    public Roles Role { get; }
+
+    public CreateUserCommand(
+        string email, 
+        string password, 
+        Roles role, 
+        string? username = null)
     {
         Email = email.Trim();
         Password = password.Trim();
-        Username = string.IsNullOrEmpty(username?.Trim()) ? null : username.Trim();
+        Username = string.IsNullOrWhiteSpace(username) ? null : username.Trim();
+        
+        Role = role;
+
     }
 }
 

@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Carter;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.OpenApi.Models;
 using Quartz;
-using RssReader.API.Common.Quartz.Jobs;
+using RssReader.API.Common.Authorization;
+using RssReader.API.Common.QuartzJobs;
+using Serilog;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Reflection;
 
@@ -11,7 +15,17 @@ internal static class StartupUtils
 {
     public static string CorsPolicyName = "RssReaderCors";
 
-    public static void RegisterCors(this IServiceCollection services)
+    public static void RegisterSerilog(this WebApplicationBuilder builder, IConfiguration configuration)
+    {
+        Log.Logger = new LoggerConfiguration().ReadFrom
+                                              .Configuration(configuration)
+                                              .CreateLogger();
+
+        builder.Logging.AddSerilog(Log.Logger);
+        builder.Host.UseSerilog();
+    }
+
+    public static void RegisterPresentationServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddCors(options =>
         {
@@ -20,37 +34,54 @@ internal static class StartupUtils
                                               .AllowAnyHeader()
                                               .AllowAnyMethod());
         });
+
+        services.AddCarter();
+        RegisterQuartzServices(services);
+        services.AddSwaggerGen(RegisterSwagger);
+
+        services.AddTransient<ExceptionHandlingMiddleware>();
+        services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
     }
 
-    public static void RegisterQuartzServices(this IServiceCollection services)
+    private static void RegisterQuartzServices(IServiceCollection services)
     {
         services.AddQuartz(options =>
         {
+            options.UseMicrosoftDependencyInjectionJobFactory();
+
             var expiredOTPsKey = JobKey.Create(nameof(RemoveExpiredOTPsJob));
 
             options.AddJob<RemoveExpiredOTPsJob>(expiredOTPsKey)
                    .AddTrigger(trigger =>
                         trigger.ForJob(expiredOTPsKey)
                                .WithSchedule(CronScheduleBuilder.WeeklyOnDayAndHourAndMinute(DayOfWeek.Wednesday, 1, 0)));
+
+            var repullFeedsKey = JobKey.Create(nameof(PullFeedsJob));
+
+            options.AddJob<PullFeedsJob>(repullFeedsKey)
+                   .AddTrigger(trigger => 
+                        trigger.ForJob(repullFeedsKey)
+                               .WithSimpleSchedule(SimpleScheduleBuilder.RepeatSecondlyForever(30)));
         });
 
-        services.AddQuartzHostedService();
+        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
     }
 
-    public static void RegisterSwagger(SwaggerGenOptions options)
+    private static void RegisterSwagger(SwaggerGenOptions options)
     {
         // Add JWT authentication
         options.AddSecurityDefinition(
-        JwtBearerDefaults.AuthenticationScheme,
-        new OpenApiSecurityScheme
-        {
-            Name = "Authorization",
-            Type = SecuritySchemeType.Http,
-            In = ParameterLocation.Header,
-            Scheme = JwtBearerDefaults.AuthenticationScheme,
-            BearerFormat = "JWT",
-            Description = "JWT authentication (no need to add 'Bearer' in the beginning)",
-        });
+            JwtBearerDefaults.AuthenticationScheme,
+            new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.Http,
+                In = ParameterLocation.Header,
+                Scheme = JwtBearerDefaults.AuthenticationScheme,
+                BearerFormat = "JWT",
+                Description = "JWT authentication (no need to add 'Bearer' in the beginning)",
+            });
 
         options.AddSecurityRequirement(new OpenApiSecurityRequirement {
             {

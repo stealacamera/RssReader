@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using MediatR;
 using System.Text.RegularExpressions;
 
 namespace RssReader.Application.Common.Validation;
@@ -23,9 +24,10 @@ internal static class ValidationUtils
         return ruleBuilder.Must(url =>
                             {
                                 // Validate url format
-                                Uri? uri = null;
+                                Uri uri;
 
-                                if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || uri == null)
+                                if (!Uri.TryCreate(url, UriKind.Absolute, out uri) || 
+                                    !(uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps))
                                     return false;
 
                                 return true;

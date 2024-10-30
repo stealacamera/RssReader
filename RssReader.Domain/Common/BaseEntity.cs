@@ -1,12 +1,13 @@
 ﻿namespace RssReader.Domain.Common;
 
-public abstract class BaseEntity 
+public abstract class BaseEntity
 {
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
 }
 
-public abstract class BaseSimpleEntity : BaseEntity
+public abstract class BaseSimpleEntity<TKey> : BaseEntity 
+    where TKey : struct, IComparable<TKey>
 {
-    public int Id { get; set; }
+    public TKey Id { get; set; }
 }

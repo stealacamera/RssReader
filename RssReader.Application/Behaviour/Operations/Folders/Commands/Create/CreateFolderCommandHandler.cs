@@ -28,7 +28,7 @@ internal class CreateFolderCommandHandler : BaseHandler, IRequestHandler<CreateF
         await _workUnit.FoldersRepository.AddAsync(newFolder, cancellationToken);
         await _workUnit.SaveChangesAsync();
 
-        return new Folder(newFolder.Id, newFolder.Name, newFolder.OwnerId);
+        return new Folder(newFolder.Id, newFolder.Name);
     }
 
     private async Task ValidateRequestAsync(CreateFolderCommand request, CancellationToken cancellationToken)

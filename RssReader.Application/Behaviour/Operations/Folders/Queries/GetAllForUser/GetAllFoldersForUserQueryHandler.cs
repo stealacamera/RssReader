@@ -6,13 +6,13 @@ using RssReader.Application.Common.DTOs;
 
 namespace RssReader.Application.Behaviour.Operations.Folders.Queries.GetAllForUser;
 
-internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<GetAllFoldersForUserQuery, IList<Folder>>
+internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<GetAllFoldersForUserQuery, IList<SimpleFolder>>
 {
     public GetAllFoldersForUserQueryHandler(IWorkUnit workUnit) : base(workUnit)
     {
     }
 
-    public async Task<IList<Folder>> Handle(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
+    public async Task<IList<SimpleFolder>> Handle(GetAllFoldersForUserQuery request, CancellationToken cancellationToken)
     {
         // Validate request
         await new GetAllFoldersForUserQueryValidator().ValidateAndThrowAsync(request, cancellationToken);
@@ -22,7 +22,7 @@ internal class GetAllFoldersForUserQueryHandler : BaseHandler, IRequestHandler<G
         var userFolders = await _workUnit.FoldersRepository
                                          .GetAllForUserAsync(request.RequesterId, cancellationToken);
 
-        return userFolders.Select(e => new Folder(e.Id, e.Name, request.RequesterId))
+        return userFolders.Select(e => new SimpleFolder(e.Id, e.Name))
                           .ToList();
     }
 }

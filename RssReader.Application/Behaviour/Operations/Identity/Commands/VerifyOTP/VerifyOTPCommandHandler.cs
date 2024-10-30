@@ -40,7 +40,7 @@ internal class VerifyOTPCommandHandler : BaseHandler, IRequestHandler<VerifyOTPC
         }
     }
 
-    private async Task<Domain.Entities.OTP> ValidateRequestAsync(VerifyOTPCommand request, CancellationToken cancellationToken)
+    private async Task<Domain.Entities.Identity.OTP> ValidateRequestAsync(VerifyOTPCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
         await new ValidateOTPCommandValidator().ValidateAndThrowAsync(request, cancellationToken);

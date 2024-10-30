@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using RssReader.Domain.Entities;
+using RssReader.Domain.Entities.Identity;
 
 namespace RssReader.Infrastructure.Configurations;
 

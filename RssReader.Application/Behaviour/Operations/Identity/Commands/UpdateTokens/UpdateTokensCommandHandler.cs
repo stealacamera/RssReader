@@ -33,7 +33,7 @@ internal class UpdateTokensCommandHandler : BaseHandler, IRequestHandler<UpdateT
             user.RefreshToken!);
     }
 
-    private async Task<Domain.Entities.User> ValidateRequestAsync(UpdateTokensCommand request, CancellationToken cancellationToken)
+    private async Task<Domain.Entities.Identity.User> ValidateRequestAsync(UpdateTokensCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
         await new UpdateTokensCommandValidator().ValidateAndThrowAsync(request, cancellationToken);

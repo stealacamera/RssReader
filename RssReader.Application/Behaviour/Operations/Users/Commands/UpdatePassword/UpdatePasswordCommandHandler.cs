@@ -5,6 +5,7 @@ using RssReader.Application.Abstractions;
 using RssReader.Application.Common;
 using RssReader.Application.Common.Exceptions;
 using RssReader.Application.Common.Exceptions.General;
+using RssReader.Domain.Entities.Identity;
 
 namespace RssReader.Application.Behaviour.Operations.Users.Commands.UpdatePassword;
 
@@ -19,13 +20,13 @@ internal class UpdatePasswordCommandHandler : BaseHandler, IRequestHandler<Updat
         var user = await ValidateRequestAsync(request, cancellationToken);
 
         // Update password
-        PasswordHasher<Domain.Entities.User> passwordHasher = new();
+        PasswordHasher<User> passwordHasher = new();
         user.HashedPassword = passwordHasher.HashPassword(user, request.NewPassword);
         
         await _workUnit.SaveChangesAsync();
     }
 
-    private async Task<Domain.Entities.User> ValidateRequestAsync(UpdatePasswordCommand request, CancellationToken cancellationToken)
+    private async Task<User> ValidateRequestAsync(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
         // Validate request properties
         await new UpdatePasswordCommandValidator().ValidateAndThrowAsync(request, cancellationToken);
@@ -38,7 +39,7 @@ internal class UpdatePasswordCommandHandler : BaseHandler, IRequestHandler<Updat
             throw new UnauthorizedException();
 
         // Verify password
-        PasswordHasher<Domain.Entities.User> passwordHasher = new();
+        PasswordHasher<User> passwordHasher = new();
         var passwordVerificationResult = passwordHasher.VerifyHashedPassword(user, user.HashedPassword, request.OldPassword);
 
         if (passwordVerificationResult == PasswordVerificationResult.Failed)
