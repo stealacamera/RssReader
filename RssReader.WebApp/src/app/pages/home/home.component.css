@@ -1,0 +1,19 @@
+#promo {
+    background-size: cover;
+    background-position: center;
+
+    padding: 7em 0;
+    margin: 0;
+}
+
+#details {
+    margin: 3em 2em;
+}
+
+#src-icons {
+    font-size: 3em;
+}
+
+#src-icons > i {
+    margin-left: 0.3em;
+}
