@@ -16,13 +16,16 @@ Points of note regarding the API:
 - API continuously pulls all RSS feeds in the background in 30-second internals
 - Users are subscribed to RSS feeds, rather than creating new ones, so as to cut down on data redundancy
 
+![Database ERD schema](Misc/db-schema.png)
+
 ## Frontend
 The webpage is a sample showcase of the base functionalities of the API, i.e.:
 - Signing up & logging in
 - Creating folders and subscriptions
 - Adding new tags to a subscription
-- Filtering feed view
+- Filtering dashboard feed
 
-![](Misc/showcase/signup-view.png "Sign up page") ![](Misc/showcase/login-view.png "Login page")
-![](Misc/showcase/homepage-view.png "Homepage") ![](Misc/showcase/feeditem-view.png "Feed item view")
-![](Misc/showcase/addfeed-action.gif "Showcase of adding a new folder and feed subscription")
+![Sign up page](Misc/showcase/signup-view.png "Sign up page") ![Login page](Misc/showcase/login-view.png "Login page")
+![Email verification page](Misc/showcase/emailotp-view.png "Email verification page") 
+![Dashboard page](Misc/showcase/homepage-view.png "Dashboard page") ![Feed item view](Misc/showcase/feeditem-view.png "Feed item view")
+![Showcase of adding a new folder and feed subscription](Misc/showcase/addfeed-action.gif "Showcase of adding a new folder and feed subscription")
