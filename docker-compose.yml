@@ -1,0 +1,31 @@
+version: '3.4'
+
+services:
+  rssreader.api:
+    image: ${DOCKER_REGISTRY-}rssreaderapi
+    container_name: rssreader.api
+    build:
+      context: .
+      dockerfile: RssReader.API\Dockerfile
+    ports:
+        - "5000:5000"
+        - "5001:5001"
+  
+  rssreader.database:
+    image: postgres:latest
+    container_name: rssreader.database
+    environment:
+        - POSTGRES_DB=RssReader
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=asdasd123
+    volumes:
+        - ./.containers/rssreader-db:/var/lib/postgresql/data
+    ports:
+        - "5432:5432"
+
+  rssreader.cache:
+    image: redis:latest
+    container_name: rssreader.cache
+    restart: always
+    ports:
+        - "6379:6379"

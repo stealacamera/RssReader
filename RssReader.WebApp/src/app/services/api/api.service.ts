@@ -17,7 +17,7 @@ export class ApiService {
   //private authRequiredContext = new HttpContext().set(AUTH_REQUIRED, true);
   private authNotRequiredContext = new HttpContext().set(AUTH_REQUIRED, false);
 
-  private baseUrl = 'https://localhost:51728';
+  private baseUrl = 'https://localhost:5001';
   private identityUri = 'identity'; private usersUri = 'users';
   private foldersUri = 'folders'; private feedsUri = 'feeds';
   private feedItemsUri = 'feedItems'; private tagsUri = 'tags';
